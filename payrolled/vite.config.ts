@@ -14,8 +14,8 @@ import * as t from '@babel/types';
 
 
 // CJS/ESM interop for Babel libs
-const traverse: typeof _traverse.default = ( (_traverse as any).default ?? _traverse ) as any;
-const generate: typeof _generate.default = ( (_generate as any).default ?? _generate ) as any;
+const traverse: typeof _traverse.default = ((_traverse as any).default ?? _traverse) as any;
+const generate: typeof _generate.default = ((_generate as any).default ?? _generate) as any;
 
 function cdnPrefixImages(): Plugin {
   const DEBUG = process.env.CDN_IMG_DEBUG === '1';
@@ -222,6 +222,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        "@contracts": path.resolve(__dirname, "./contracts"),
         // Proxy react-router-dom to our wrapper
         "react-router-dom": path.resolve(__dirname, "./src/lib/react-router-dom-proxy.tsx"),
         // Original react-router-dom under a different name
@@ -233,7 +234,7 @@ export default defineConfig(({ mode }) => {
       // In production, this will be false by default unless explicitly set to 'true'
       // In development and test, this will be true by default
       __ROUTE_MESSAGING_ENABLED__: JSON.stringify(
-        mode === 'production' 
+        mode === 'production'
           ? process.env.VITE_ENABLE_ROUTE_MESSAGING === 'true'
           : process.env.VITE_ENABLE_ROUTE_MESSAGING !== 'false'
       ),

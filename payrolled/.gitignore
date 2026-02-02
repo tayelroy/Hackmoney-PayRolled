@@ -62,6 +62,10 @@ temp/
 .vite/
 .vite-inspect/
 
+# --- Foundry ---
+contracts/out/
+contracts/cache/
+
 # --- TypeScript ---
 *.tsbuildinfo
 
