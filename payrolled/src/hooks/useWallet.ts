@@ -1,30 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { ROUTE_PATHS } from '@/lib/index';
 
 /**
  * useWallet Hook
- * Provides wallet connection state and management.
- * Note: Using simulated state as the wagmi dependency is not available in this environment.
+ * Provides wallet connection state and management via wagmi.
  */
 export function useWallet() {
-  // Simulated wallet state for the Arc Layer-1 ecosystem
-  const [address, setAddress] = useState<string | undefined>('0x742d35Cc6634C0532925a3b844Bc454e4438f44e');
-  const [isConnected, setIsConnected] = useState(true);
-  const [isConnecting] = useState(false);
-  const [chain] = useState({ name: 'Arc Mainnet' });
+  const { address, isConnected, chain, isConnecting } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const disconnect = () => {
-    setIsConnected(false);
-    setAddress(undefined);
+  // Helper to connect using the first available connector (usually Injected/MetaMask)
+  const connectWallet = () => {
+    const connector = connectors[0];
+    if (connector) {
+      connect({ connector });
+    }
   };
 
   useEffect(() => {
-    if (isConnecting) return;
-
+    // Only redirect if explicitly in a connection flow, or strict auth gating is desired.
+    // Minimizing auto-redirects prevents annoyance if wallet disconnects temporarily.
     const isHomePage = location.pathname === ROUTE_PATHS.HOME;
     const isDashboardRoute = location.pathname.startsWith(ROUTE_PATHS.DASHBOARD);
 
@@ -35,14 +36,15 @@ export function useWallet() {
     if (!isConnected && isDashboardRoute) {
       navigate(ROUTE_PATHS.HOME, { replace: true });
     }
-  }, [isConnected, isConnecting, location.pathname, navigate]);
+  }, [isConnected, location.pathname, navigate]);
 
   return {
     address,
     isConnected,
     isConnecting,
+    connectWallet,
     disconnect,
     chain,
-    networkName: chain?.name || 'Arc Mainnet',
+    networkName: chain?.name || 'Unknown Network',
   };
 }
