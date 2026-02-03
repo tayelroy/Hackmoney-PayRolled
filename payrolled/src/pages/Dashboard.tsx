@@ -217,7 +217,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-end">
                       <div className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                        Pending
+                        {emp.status}
                       </div>
                     </div>
                   </div>
