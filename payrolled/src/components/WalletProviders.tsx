@@ -26,8 +26,10 @@ const arcTestnet = {
   testnet: true,
 } as const satisfies Chain;
 
+import { mainnet } from 'wagmi/chains';
+
 export const config = createConfig({
-  chains: [arcTestnet],
+  chains: [arcTestnet, mainnet],
   transports: {
     [arcTestnet.id]: http(),
   },
