@@ -1,27 +1,40 @@
 import React from 'react';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { createConfig, http, WagmiProvider } from 'wagmi';
+import { type Chain } from 'viem';
+import { injected } from 'wagmi/connectors';
 
 /**
- * Arc Mainnet Configuration
- * Optimized for the Arc L1 ecosystem mentioned in the project specs.
- * © 2026 PayRolled Treasury Solutions
+ * Arc Testnet Configuration
+ * Chain ID: 5042002
  */
-const arcMainnet = {
-  id: 255,
-  name: 'Arc Mainnet',
+const arcTestnet = {
+  id: 5_042_002,
+  name: 'Arc Testnet',
   nativeCurrency: {
     decimals: 18,
-    name: 'Arc',
-    symbol: 'ARC',
+    name: 'USDC', // Arc uses native USDC as gas
+    symbol: 'USDC',
   },
   rpcUrls: {
-    default: { http: ['https://rpc.arc.io'] },
-    public: { http: ['https://rpc.arc.io'] },
+    default: { http: ['https://rpc.testnet.arc.network'] },
+    public: { http: ['https://rpc.testnet.arc.network'] },
   },
   blockExplorers: {
-    default: { name: 'ArcScan', url: 'https://explorer.arc.io' },
+    default: { name: 'ArcScan', url: 'https://testnet.arcscan.app' },
   },
-};
+  testnet: true,
+} as const satisfies Chain;
+
+export const config = createConfig({
+  chains: [arcTestnet],
+  transports: {
+    [arcTestnet.id]: http(),
+  },
+  connectors: [
+    injected(),
+  ],
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,12 +48,13 @@ const queryClient = new QueryClient({
 /**
  * WalletProviders Component
  * Wraps the application with necessary Web3 and Data fetching contexts.
- * Note: Using simulated wallet connection for demo purposes.
  */
 export function WalletProviders({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }

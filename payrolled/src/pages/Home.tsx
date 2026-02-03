@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
  * Simulates RainbowKit's ConnectButton for demo purposes
  */
 const ConnectButton = ({ chainStatus, showBalance }: { chainStatus?: string; showBalance?: boolean }) => {
-  const { isConnected } = useWallet();
+  const { isConnected, connectWallet } = useWallet();
 
   if (isConnected) {
     return null; // User will be redirected to dashboard
@@ -26,6 +26,7 @@ const ConnectButton = ({ chainStatus, showBalance }: { chainStatus?: string; sho
     <Button
       className="rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200"
       size="lg"
+      onClick={connectWallet}
     >
       Connect Wallet
     </Button>
