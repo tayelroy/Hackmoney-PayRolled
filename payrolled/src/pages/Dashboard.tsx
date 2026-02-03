@@ -210,7 +210,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <img src="/logo.png" alt="Arc" className="w-4 h-4 opacity-70" />
                       Arc Testnet
                     </div>
                     <div className="font-mono font-medium">
