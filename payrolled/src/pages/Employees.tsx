@@ -15,6 +15,65 @@ import { usePayroll } from '@/hooks/usePayroll';
 import { formatAddress, formatCurrency } from '@/lib/index';
 import { supabase, type Employee } from '@/lib/supabase';
 import { AddEmployeeDialog } from '@/components/AddEmployeeDialog';
+import { useEmployeePrefs } from '@/hooks/useEmployeePrefs';
+import { Badge } from '@/components/ui/badge';
+
+const EmployeeRow = ({ employee }: { employee: Employee }) => {
+  const { ensName, preferredChain, preferredToken, isLoading } = useEmployeePrefs(employee.wallet_address);
+
+  // Helper to map chain ID to name
+  const getChainName = (chainId: number) => {
+    if (chainId === 8453) return 'Base';
+    if (chainId === 11155111) return 'Sepolia';
+    if (chainId === 5042002) return 'Arc Testnet';
+    return `Chain ${chainId}`;
+  };
+
+  return (
+    <Card className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card/50 hover:bg-card/80 transition-colors border-border/50">
+      <div className="flex items-center gap-4">
+        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+          {employee.name.charAt(0)}
+        </div>
+        <div>
+          <h4 className="font-medium text-foreground">{employee.name}</h4>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+            <Wallet className="h-3 w-3" />
+            {isLoading ? (
+              <span className="animate-pulse">Loading ENS...</span>
+            ) : (
+              <span className={ensName ? "text-primary font-semibold" : ""}>
+                {ensName || formatAddress(employee.wallet_address)}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+        {/* Preference Badge */}
+        <div className="flex flex-col items-end gap-1">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">Preferences</p>
+          {isLoading ? (
+            <div className="h-5 w-20 bg-muted/50 rounded animate-pulse" />
+          ) : (
+            <Badge variant="outline" className="text-xs font-normal gap-1">
+              {getChainName(preferredChain)} • {preferredToken}
+            </Badge>
+          )}
+        </div>
+
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">Salary</p>
+          <p className="font-semibold">{formatCurrency(Number(employee.salary))}</p>
+        </div>
+        <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${employee.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
+          {employee.status}
+        </div>
+      </div>
+    </Card>
+  );
+};
 
 const Employees = () => {
   const { isConnected } = useWallet();
@@ -143,30 +202,7 @@ const Employees = () => {
           <div className="space-y-6">
             <div className="grid gap-4">
               {employees.map((employee) => (
-                <Card key={employee.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-card/50 hover:bg-card/80 transition-colors border-border/50">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {employee.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground">{employee.name}</h4>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-                        <Wallet className="h-3 w-3" />
-                        {formatAddress(employee.wallet_address)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Salary</p>
-                      <p className="font-semibold">{formatCurrency(Number(employee.salary))}</p>
-                    </div>
-                    <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${employee.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
-                      {employee.status}
-                    </div>
-                  </div>
-                </Card>
+                <EmployeeRow key={employee.id} employee={employee} />
               ))}
             </div>
 
