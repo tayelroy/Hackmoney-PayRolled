@@ -1,9 +1,18 @@
-import React from 'react';
+/**
+ * Employees Page
+ * 
+ * Part of the PayRolled web3 payroll application (2026).
+ * Provides a professional interface for managing personnel compensation on the Arc network.
+ */
+import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
-import { Users, Plus, Search, Filter } from 'lucide-react';
+import { Users, Plus, Search, Filter, FlaskConical, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { useWallet } from '@/hooks/useWallet';
+import { usePayroll } from '@/hooks/usePayroll';
+import { formatAddress } from '@/lib/index';
 
 /**
  * Employees Page
@@ -12,6 +21,16 @@ import { Card } from '@/components/ui/card';
  * Provides a professional interface for managing personnel compensation on the Arc network.
  */
 const Employees = () => {
+  const { address, isConnected } = useWallet();
+  const { batchPay, isWritePending, isConfirming, isConfirmed, hash, error } = usePayroll();
+  const [testAmount, setTestAmount] = useState('0.0001');
+
+  const handleTestPayroll = () => {
+    if (!address) return;
+    // Self-send test: sending to own address
+    batchPay([address], [testAmount]);
+  };
+
   return (
     <Layout>
       <div className="flex flex-col space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -31,12 +50,84 @@ const Employees = () => {
           </Button>
         </div>
 
+        {/* Developer Test Section - Temporary for Phase 3 */}
+        <Card className="border-amber-500/20 bg-amber-500/5 p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <FlaskConical size={120} />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-lg font-semibold text-amber-500 flex items-center gap-2">
+              <FlaskConical className="h-5 w-5" />
+              Contract Integration Test
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+              Verify the smart contract connection by sending a small self-payment on the Arc Testnet.
+              Ensure you have testnet USDC/Gas before running.
+            </p>
+
+            <div className="mt-6 flex flex-col sm:flex-row items-end gap-4">
+              <div className="w-full sm:w-48">
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Test Amount (USDC)</label>
+                <Input
+                  value={testAmount}
+                  onChange={(e) => setTestAmount(e.target.value)}
+                  className="bg-background border-amber-500/20 focus-visible:ring-amber-500/30"
+                />
+              </div>
+
+              <Button
+                onClick={handleTestPayroll}
+                disabled={!isConnected || isWritePending || isConfirming}
+                className="w-full sm:w-auto gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                {isWritePending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Confirming in Wallet...
+                  </>
+                ) : isConfirming ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Processing On-Chain...
+                  </>
+                ) : (
+                  <>
+                    Run Test Payroll
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Transaction Feedback States */}
+            {hash && (
+              <div className="mt-4 p-3 bg-background/50 rounded-lg border border-border text-xs font-mono break-all flex items-start gap-2">
+                <div className="mt-0.5 text-muted-foreground">Tx Hash:</div>
+                <div className="text-foreground">{hash}</div>
+              </div>
+            )}
+
+            {isConfirmed && (
+              <div className="mt-2 text-sm text-emerald-500 flex items-center gap-2 font-medium">
+                <CheckCircle className="h-4 w-4" />
+                Transaction confirmed successfully! Check your wallet balance.
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-2 text-sm text-destructive flex items-center gap-2 font-medium">
+                <AlertCircle className="h-4 w-4" />
+                Error: {error.message}
+              </div>
+            )}
+          </div>
+        </Card>
+
         {/* Toolbar Section */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input 
-              placeholder="Search by name, wallet address, or ENS..." 
+            <Input
+              placeholder="Search by name, wallet address, or ENS..."
               className="pl-10 bg-card/50 border-border focus:ring-primary/20"
             />
           </div>
@@ -70,7 +161,7 @@ const Employees = () => {
               </Button>
             </div>
           </div>
-          
+
           {/* Footer Stats Placeholder */}
           <div className="border-t border-border bg-muted/5 px-6 py-4 flex items-center justify-between text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest">
             <div className="flex items-center gap-6">
