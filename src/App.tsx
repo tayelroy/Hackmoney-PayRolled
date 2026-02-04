@@ -11,7 +11,6 @@ import Dashboard from "@/pages/Dashboard";
 import Employees from "@/pages/Employees";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
-import { TestBridgeKit } from "@/pages/test";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,10 +47,6 @@ const App = () => {
               <Route
                 path={ROUTE_PATHS.SETTINGS}
                 element={<Settings />}
-              />
-              <Route
-                path={ROUTE_PATHS.TEST}
-                element={<TestBridgeKit />}
               />
               <Route
                 path="*"
