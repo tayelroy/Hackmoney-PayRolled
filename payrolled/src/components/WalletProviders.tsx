@@ -26,12 +26,13 @@ const arcTestnet = {
   testnet: true,
 } as const satisfies Chain;
 
-import { mainnet } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
 
 export const config = createConfig({
-  chains: [arcTestnet, mainnet],
+  chains: [arcTestnet, sepolia],
   transports: {
     [arcTestnet.id]: http(),
+    [sepolia.id]: http("https://1rpc.io/sepolia"),
   },
   connectors: [
     injected(),
