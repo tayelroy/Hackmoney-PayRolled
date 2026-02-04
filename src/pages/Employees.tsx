@@ -14,7 +14,6 @@ import { Card } from '@/components/ui/card';
 import { EmployeeRow } from '@/components/EmployeeRow';
 import { AddEmployeeDialog } from '@/components/AddEmployeeDialog';
 import { Layout } from '@/components/Layout';
-import { CCTPDebugger } from '@/components/CCTPDebugger';
 import { PaymentWizard } from '@/components/PaymentWizard';
 
 // Arc Testnet USDC
@@ -173,18 +172,9 @@ const Employees = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowDebugger(!showDebugger)}
-            >
-              {showDebugger ? 'Hide' : 'Show'} Debug Info
-            </Button>
             <AddEmployeeDialog onEmployeeAdded={loadEmployees} />
           </div>
         </div>
-
-        {/* CCTP Debugger - Add this temporarily */}
-        {showDebugger && <CCTPDebugger />}
 
         <div className="grid gap-4">
           {loading ? (
