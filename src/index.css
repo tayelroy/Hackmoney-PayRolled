@@ -1,0 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+==========================================================================
+【AI HANDOVER NOTE】
+1. DESIGN PHILOSOPHY:
+   - Institutional Web3: The design blends the high-trust aesthetics of traditional finance (Institutional) with the transparency and speed of blockchain (Web3).
+   - Style: Neo-minimalism with high-precision 'Physicality'. Surfaces use subtle rim-lighting and ambient shadows to create a layered, modular 'Bento' feel, essential for complex treasury data.
+   - Corporate Dark Mode: Primarily optimized for dark mode to align with the 'developer/trader' persona, using a Zinc/Slate-based foundation for a cold, professional atmosphere.
+
+2. TYPOGRAPHY:
+   - Sans: Geist Sans is chosen for its geometric precision and excellent legibility in data-heavy SaaS dashboards. It communicates a high-tech, modern 'Next.js-native' aesthetic.
+   - Mono: JetBrains Mono is used for wallet addresses, transaction hashes, and USDC amounts to ensure vertical alignment and a 'hard-tech' developer-centric feel.
+
+3. COLOR SYSTEM:
+   - Brand Color: 'Arc Blue' (Hue 255). A deep, vibrant blue representing liquidity and the Arc Layer-1 ecosystem. 
+   - Mapping: --primary uses the core Arc Blue. --accent uses a desaturated version to highlight secondary interactive elements without overwhelming the treasury data.
+   - Semantic Logic: Success is Emerald (155) for positive cash flow; Destructive is Rose (15) for burn rates and deletions; Warning is Amber (45) for pending network confirmations.
+
+4. USAGE GUIDE:
+   - Dashboard Layout: Uses a fixed-width left sidebar with a fluid content area. Sidebar surface is slightly darker than the main background in dark mode to provide structural grounding.
+   - Effects: Use 'ring' for focus states and 'accent' for hover states on list items. Cards should have a 1px border using --border with a 0.02 opacity background overlay for depth.
+   - Data Display: All financial metrics must use tabular numbers (font-variant-numeric: tabular-nums) via the Mono font stack.
+==========================================================================
+*/
+
+:root {
+  /* Typography */
+  --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, ntosans, sans-serif;
+  --font-mono: JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Core UI Tokens */
+  --background: oklch(0.99 0.005 260);
+  --foreground: oklch(0.15 0.02 260);
+  --card: oklch(1.0 0 0);
+  --card-foreground: oklch(0.15 0.02 260);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.15 0.02 260);
+  --primary: oklch(0.45 0.22 255);
+  --primary-foreground: oklch(0.98 0.01 260);
+  --secondary: oklch(0.95 0.01 260);
+  --secondary-foreground: oklch(0.2 0.02 260);
+  --muted: oklch(0.95 0.01 260);
+  --muted-foreground: oklch(0.45 0.02 260);
+  --accent: oklch(0.95 0.01 260);
+  --accent-foreground: oklch(0.2 0.02 260);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.01 260);
+  --border: oklch(0.9 0.01 260);
+  --input: oklch(0.9 0.01 260);
+  --ring: oklch(0.45 0.22 255);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.5 0.2 250);
+  --chart-2: oklch(0.6 0.15 180);
+  --chart-3: oklch(0.4 0.15 280);
+  --chart-4: oklch(0.7 0.12 210);
+  --chart-5: oklch(0.65 0.18 45);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.98 0.005 260);
+  --sidebar-foreground: oklch(0.35 0.02 260);
+  --sidebar-primary: oklch(0.45 0.22 255);
+  --sidebar-primary-foreground: oklch(0.98 0.01 260);
+  --sidebar-accent: oklch(0.94 0.01 260);
+  --sidebar-accent-foreground: oklch(0.15 0.02 260);
+  --sidebar-border: oklch(0.92 0.01 260);
+  --sidebar-ring: oklch(0.45 0.22 255);
+}
+
+.dark {
+  --background: oklch(0.12 0.015 260);
+  --foreground: oklch(0.95 0.01 260);
+  --card: oklch(0.14 0.015 260);
+  --card-foreground: oklch(0.95 0.01 260);
+  --popover: oklch(0.12 0.015 260);
+  --popover-foreground: oklch(0.95 0.01 260);
+  --primary: oklch(0.65 0.24 255);
+  --primary-foreground: oklch(0.1 0.02 260);
+  --secondary: oklch(0.2 0.02 260);
+  --secondary-foreground: oklch(0.95 0.01 260);
+  --muted: oklch(0.2 0.02 260);
+  --muted-foreground: oklch(0.65 0.02 260);
+  --accent: oklch(0.2 0.02 260);
+  --accent-foreground: oklch(0.95 0.01 260);
+  --destructive: oklch(0.5 0.2 25);
+  --destructive-foreground: oklch(0.95 0.01 260);
+  --border: oklch(0.25 0.02 260);
+  --input: oklch(0.25 0.02 260);
+  --ring: oklch(0.65 0.24 255);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.65 0.24 255);
+  --chart-2: oklch(0.7 0.15 180);
+  --chart-3: oklch(0.6 0.15 280);
+  --chart-4: oklch(0.75 0.12 210);
+  --chart-5: oklch(0.7 0.18 45);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.1 0.015 260);
+  --sidebar-foreground: oklch(0.85 0.01 260);
+  --sidebar-primary: oklch(0.65 0.24 255);
+  --sidebar-primary-foreground: oklch(0.1 0.02 260);
+  --sidebar-accent: oklch(0.18 0.02 260);
+  --sidebar-accent-foreground: oklch(0.95 0.01 260);
+  --sidebar-border: oklch(0.18 0.02 260);
+  --sidebar-ring: oklch(0.65 0.24 255);
+}
+
+@theme inline {
+  /* Shadcn Core Mapping */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts Mapping */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar Mapping */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans min-h-screen;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40;
+  }
+}
