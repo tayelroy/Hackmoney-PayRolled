@@ -17,7 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2, Loader2, ArrowRight, Wallet, Globe, AlertCircle } from 'lucide-react';
 import { usePayroll } from '@/hooks/usePayroll';
 import { useBridgeKit } from '@/hooks/useBridgeKit';
-import { Employee } from '@/lib/supabase';
+import { Employee, supabase } from '@/lib/supabase';
 
 interface PaymentWizardProps {
     employees: Employee[];
@@ -36,7 +36,7 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
     const publicClient = usePublicClient({ chainId: 11155111 }); // Sepolia lookup
 
     // Hooks
-    const { batchPay, isWritePending: isArcPending, isConfirming: isArcConfirming, isConfirmed: isArcConfirmed } = usePayroll();
+    const { batchPay, isWritePending: isArcPending, isConfirming: isArcConfirming, isConfirmed: isArcConfirmed, hash: arcHash } = usePayroll();
     const { transfer: bridgeTransfer, status: bridgeStatus } = useBridgeKit();
 
     // Internal State for Classification
@@ -107,7 +107,22 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
     };
 
     // Called manually or by effect when Arc is done
-    const handleArcComplete = () => {
+    const handleArcComplete = async () => {
+        // Record Arc payments in history
+        if (classified?.arc && classified.arc.length > 0 && arcHash) {
+            const historyRecords = classified.arc.map(emp => ({
+                employee_id: emp.id,
+                amount: emp.salary,
+                tx_hash: arcHash,
+                chain: 'Arc Testnet',
+                status: 'Paid',
+                recipient_address: emp.wallet_address
+            }));
+
+            const { error } = await supabase.from('payment_history').insert(historyRecords);
+            if (error) console.error("Failed to record Arc history", error);
+        }
+
         setProcessedSteps(prev => [...prev, 'ARC']);
         if (classified?.crossChain && classified.crossChain.length > 0) {
             setStep('PAYING_BRIDGE');
@@ -127,7 +142,20 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         for (const item of classified.crossChain) {
             try {
                 console.log(`Bridging to ${item.emp.name} on ${item.chainId}`);
-                await bridgeTransfer(item.emp.salary.toString(), item.emp.wallet_address, item.chainId);
+                const result = await bridgeTransfer(item.emp.salary.toString(), item.emp.wallet_address, item.chainId);
+
+                // Record Bridge payment in history
+                if (result) {
+                    const { error } = await supabase.from('payment_history').insert({
+                        employee_id: item.emp.id,
+                        amount: item.emp.salary,
+                        tx_hash: (result as any).srcTxHash || 'pending',
+                        chain: item.chainId === 84532 ? 'Base Sepolia' : 'Ethereum Sepolia',
+                        status: 'Processing (CCTP)',
+                        recipient_address: item.emp.wallet_address
+                    });
+                    if (error) console.error("Failed to record bridge history", error);
+                }
             } catch (e) {
                 console.error("Bridge Failed for", item.emp.name, e);
             }

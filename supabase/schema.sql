@@ -18,3 +18,25 @@ on employees
 for all
 using (true)
 with check (true);
+
+-- Create Payment History table
+create table payment_history (
+  id bigint primary key generated always as identity,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  employee_id bigint references employees(id) on delete set null,
+  recipient_address text not null,
+  amount numeric not null,
+  tx_hash text not null,
+  chain text not null,
+  status text not null default 'Paid'
+);
+
+-- Enable RLS
+alter table payment_history enable row level security;
+
+-- Create Policy: Allow Public Access (Hackathon Mode)
+create policy "Allow Public Access on history"
+on payment_history
+for all
+using (true)
+with check (true);
