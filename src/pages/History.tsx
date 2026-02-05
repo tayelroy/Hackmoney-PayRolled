@@ -1,9 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Layout } from "@/components/Layout";
-import { History as HistoryIcon, Search, Filter, Download, ArrowUpRight, ExternalLink, ShieldCheck } from "lucide-react";
+import { History as HistoryIcon, Search, Filter, Download, ArrowUpRight, ExternalLink, ShieldCheck, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatAddress, formatCurrency, formatDate } from "@/lib/index";
+import { createPublicClient, http, keccak256 } from "viem";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,60 @@ interface PaymentHistory {
 export default function History() {
   const [history, setHistory] = useState<PaymentHistory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [syncingId, setSyncingId] = useState<number | null>(null);
+
+  const arcClient = createPublicClient({
+    transport: http('https://rpc.testnet.arc.network')
+  });
+
+  const updateCCTPStatus = async (item: PaymentHistory) => {
+    if (!item.tx_hash || item.tx_hash === 'pending') return;
+
+    setSyncingId(item.id);
+    try {
+      // 1. Get transaction receipt from Arc
+      console.log("Fetching receipt for", item.tx_hash);
+      const receipt = await arcClient.getTransactionReceipt({
+        hash: item.tx_hash as `0x${string}`
+      });
+
+      // 2. Find MessageSent event (Topic0: 0x8c526166...)
+      const messageSentTopic = '0x8c5261668696ce22758910d05be2067185840eae1a553097e305a4170845348d';
+      const log = receipt.logs.find(l => l.topics[0] === messageSentTopic);
+
+      if (!log) {
+        console.warn("MessageSent event not found in logs");
+        return;
+      }
+
+      // 3. Extract message bytes and hash them
+      const messageBytes = log.data;
+      const messageHash = keccak256(messageBytes);
+      console.log("Found Message Hash:", messageHash);
+
+      // 4. Check Circle Attestation API (Sandbox for testnets)
+      const response = await fetch(`https://iris-api-sandbox.circle.com/v1/attestations/${messageHash}`);
+      const data = await response.json();
+
+      if (data.status === 'complete') {
+        console.log("Attestation complete! Updating status to Paid.");
+        const { error } = await supabase
+          .from('payment_history')
+          .update({ status: 'Paid' })
+          .eq('id', item.id);
+
+        if (error) throw error;
+        // Local state will update via realtime subscription
+      } else {
+        console.log("Attestation status:", data.status);
+      }
+    } catch (err) {
+      console.error("Failed to sync CCTP status:", err);
+    } finally {
+      setSyncingId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -67,10 +121,10 @@ export default function History() {
   }, []);
 
   const filteredHistory = history.filter(item =>
-    item.tx_hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.recipient_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.employees?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.chain.toLowerCase().includes(searchTerm.toLowerCase())
+    item.tx_hash.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.recipient_address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.employees?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.chain.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getStatusColor = (status: string) => {
@@ -122,8 +176,8 @@ export default function History() {
                 type="text"
                 placeholder="Search by address, name, chain or transaction hash..."
                 className="pl-10 h-10 transition-all focus:ring-1 focus:ring-primary/50"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
@@ -170,7 +224,7 @@ export default function History() {
                         </div>
                         <h3 className="text-xl font-semibold text-foreground">No records found</h3>
                         <p className="mx-auto mt-2 max-w-sm text-muted-foreground">
-                          {searchTerm ? "Adjust your search filters to find what you're looking for." : "Your payroll history is currently empty. Process your first payroll to see records here."}
+                          {searchQuery ? "Adjust your search filters to find what you're looking for." : "Your payroll history is currently empty. Process your first payroll to see records here."}
                         </p>
                       </div>
                     </td>
@@ -193,9 +247,22 @@ export default function History() {
                         {formatCurrency(Number(item.amount))}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
-                          {item.status}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
+                            {item.status}
+                          </span>
+                          {item.status.toLowerCase().includes('processing') && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-full hover:bg-primary/10 hover:text-primary transition-all active:scale-90"
+                              onClick={() => updateCCTPStatus(item)}
+                              disabled={syncingId === item.id}
+                            >
+                              <RefreshCw className={`h-3 w-3 ${syncingId === item.id ? 'animate-spin' : ''}`} />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <TooltipProvider>

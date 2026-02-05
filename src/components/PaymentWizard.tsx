@@ -140,24 +140,56 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         // Parallel might trigger same nonce issues or rate limits.
         // Safe sequential.
         for (const item of classified.crossChain) {
+            // 1. Insert initial "Processing" record
+            const { data: historyItem, error: insertError } = await supabase
+                .from('payment_history')
+                .insert({
+                    employee_id: item.emp.id,
+                    amount: item.emp.salary,
+                    tx_hash: 'pending',
+                    chain: item.chainId === 84532 ? 'Base Sepolia' : 'Ethereum Sepolia',
+                    status: 'Processing (CCTP)',
+                    recipient_address: item.emp.wallet_address
+                })
+                .select()
+                .single();
+
+            if (insertError) console.error("Failed to insert initial bridge history", insertError);
+
             try {
                 console.log(`Bridging to ${item.emp.name} on ${item.chainId}`);
                 const result = await bridgeTransfer(item.emp.salary.toString(), item.emp.wallet_address, item.chainId);
 
-                // Record Bridge payment in history
-                if (result) {
-                    const { error } = await supabase.from('payment_history').insert({
+                // 2. Update record to "Paid"
+                if (result && historyItem) {
+                    const { error: updateError } = await supabase
+                        .from('payment_history')
+                        .update({
+                            status: 'Paid',
+                            tx_hash: (result as any).srcTxHash || 'pending'
+                        })
+                        .eq('id', historyItem.id);
+
+                    if (updateError) console.error("Failed to update bridge history", updateError);
+                } else if (result) {
+                    // Fallback if initial insert failed or result came back but historyItem is null
+                    await supabase.from('payment_history').insert({
                         employee_id: item.emp.id,
                         amount: item.emp.salary,
                         tx_hash: (result as any).srcTxHash || 'pending',
                         chain: item.chainId === 84532 ? 'Base Sepolia' : 'Ethereum Sepolia',
-                        status: 'Processing (CCTP)',
+                        status: 'Paid',
                         recipient_address: item.emp.wallet_address
                     });
-                    if (error) console.error("Failed to record bridge history", error);
                 }
             } catch (e) {
                 console.error("Bridge Failed for", item.emp.name, e);
+                if (historyItem) {
+                    await supabase
+                        .from('payment_history')
+                        .update({ status: 'Failed' })
+                        .eq('id', historyItem.id);
+                }
             }
         }
         setStep('COMPLETE');
