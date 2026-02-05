@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAccount, usePublicClient } from 'wagmi';
 import { parseEther } from 'viem';
 import { normalize } from 'viem/ens';
@@ -35,7 +35,7 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
     const publicClient = usePublicClient({ chainId: 11155111 }); // Sepolia lookup
 
     // Hooks
-    const { batchPay, isWritePending: isArcPending, isConfirming: isArcConfirming } = usePayroll();
+    const { batchPay, isWritePending: isArcPending, isConfirming: isArcConfirming, isConfirmed: isArcConfirmed } = usePayroll();
     const { transfer: bridgeTransfer, status: bridgeStatus } = useBridgeKit();
 
     // Internal State for Classification
@@ -94,16 +94,7 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                 const total = classified.arc.reduce((sum, e) => sum + parseEther(e.salary.toString()), 0n);
 
                 await batchPay(targets, values, datas, total);
-                // Note: batchPay is async but standard wagmi hook returns tx hash immediately. 
-                // We rely on isConfirming to track actual completion in the UI visually, 
-                // but for sequential flow we might need to wait?
-                // Actually usePayroll writes the contract. We need to wait for receipt if we want strict sequentiality.
-                // But usePayroll currently just returns hash.
-                // We will optimistically proceed to step 2 after a short delay OR wait for the user to click "Next" 
-                // to avoid blocking UI if tx takes long.
-                // Let's AUTO-ADVANCE only after user confirmation or detecting success?
-                // Better: Wait for isArcConfirming to flip true->false? 
-
+                // We now handle the transition in a useEffect watching isArcConfirmed
             } catch (e) {
                 console.error("Arc Payment Failed", e);
                 return;
@@ -142,6 +133,13 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         }
         setStep('COMPLETE');
     };
+
+    // Auto-advance if Arc payment is confirmed
+    useEffect(() => {
+        if (step === 'PAYING_ARC' && isArcConfirmed && !processedSteps.includes('ARC')) {
+            handleArcComplete();
+        }
+    }, [step, isArcConfirmed, processedSteps, handleArcComplete]);
 
     return (
         <Dialog open={open} onOpenChange={(v) => {
@@ -220,9 +218,7 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                                             isArcConfirming || isArcPending ? (
                                                 <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                                             ) : (
-                                                <Button size="sm" onClick={handleArcComplete} variant="outline">
-                                                    Confirm Done
-                                                </Button>
+                                                <div className="text-xs text-muted-foreground italic">Awaiting wallet...</div>
                                             )
                                         ) : (
                                             <div className="w-6 h-6 rounded-full border-2 border-gray-300" />
