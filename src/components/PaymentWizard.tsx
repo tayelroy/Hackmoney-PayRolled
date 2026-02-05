@@ -45,6 +45,8 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         crossChain: { emp: Employee; chainId: number }[];
     } | null>(null);
 
+
+
     const [isClassifying, setIsClassifying] = useState(false);
 
     // CLASSIFY EMPLOYEES ON OPEN
@@ -163,9 +165,10 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                 // 2. Update record to "Paid"
                 if (result && historyItem) {
                     console.log("[PaymentWizard] Bridge Result:", result);
-                    // Extract source hash from the 'burn' step
-                    const burnStep = (result as any).steps?.find((s: any) => s.name === 'burn');
-                    const finalHash = burnStep?.txHash ||
+
+                    // Extract final destination hash from the 'complete' step
+                    const finalHash = (result as any).steps?.[3]?.data?.txHash ||
+                        (result as any).steps?.find((s: any) => s.name === 'burn')?.txHash ||
                         (result as any).srcTxHash ||
                         'pending';
 
@@ -178,9 +181,12 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                         .eq('id', historyItem.id);
 
                     if (updateError) console.error("Failed to update bridge history", updateError);
+
+
                 } else if (result) {
-                    const burnStep = (result as any).steps?.find((s: any) => s.name === 'burn');
-                    const finalHash = burnStep?.txHash ||
+                    // Extract final destination hash from the 'complete' step
+                    const finalHash = (result as any).steps?.[3]?.data?.txHash ||
+                        (result as any).steps?.find((s: any) => s.name === 'burn')?.txHash ||
                         (result as any).srcTxHash ||
                         'pending';
 
@@ -350,18 +356,7 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                                             </p>
                                         </div>
                                     )}
-                                    {step === 'COMPLETE' && classified?.crossChain.length > 0 && (
-                                        <div className="mt-2 text-center">
-                                            <a
-                                                href="https://cctp.circle.com/?network=TESTNET"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-xs text-blue-500 hover:underline flex items-center justify-center gap-1"
-                                            >
-                                                Check Transfer Status (Circle CCTP) <Globe className="w-3 h-3" />
-                                            </a>
-                                        </div>
-                                    )}
+
                                 </Card>
                             ) : null}
                         </div>
