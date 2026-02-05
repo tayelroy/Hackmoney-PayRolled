@@ -153,6 +153,7 @@ export default function History() {
   };
 
   const getExplorerLink = (hash: string, chain: string) => {
+    if (hash.startsWith('http')) return hash;
     if (chain.includes('Arc')) return `https://testnet.arcscan.app/tx/${hash}`;
     if (chain.includes('Base')) return `https://sepolia.basescan.org/tx/${hash}`;
     return `https://sepolia.etherscan.io/tx/${hash}`;
@@ -290,7 +291,7 @@ export default function History() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-mono"
                               >
-                                {formatAddress(item.tx_hash)}
+                                {item.tx_hash.startsWith('http') ? 'View Details' : formatAddress(item.tx_hash)}
                                 <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                               </a>
                             </TooltipTrigger>
