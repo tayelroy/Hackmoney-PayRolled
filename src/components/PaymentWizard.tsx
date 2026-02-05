@@ -162,21 +162,33 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
 
                 // 2. Update record to "Paid"
                 if (result && historyItem) {
+                    console.log("[PaymentWizard] Bridge Result:", result);
+                    // Extract source hash from the 'burn' step
+                    const burnStep = (result as any).steps?.find((s: any) => s.name === 'burn');
+                    const finalHash = burnStep?.txHash ||
+                        (result as any).srcTxHash ||
+                        'pending';
+
                     const { error: updateError } = await supabase
                         .from('payment_history')
                         .update({
                             status: 'Paid',
-                            tx_hash: (result as any).srcTxHash || 'pending'
+                            tx_hash: finalHash
                         })
                         .eq('id', historyItem.id);
 
                     if (updateError) console.error("Failed to update bridge history", updateError);
                 } else if (result) {
+                    const burnStep = (result as any).steps?.find((s: any) => s.name === 'burn');
+                    const finalHash = burnStep?.txHash ||
+                        (result as any).srcTxHash ||
+                        'pending';
+
                     // Fallback if initial insert failed or result came back but historyItem is null
                     await supabase.from('payment_history').insert({
                         employee_id: item.emp.id,
                         amount: item.emp.salary,
-                        tx_hash: (result as any).srcTxHash || 'pending',
+                        tx_hash: finalHash,
                         chain: item.chainId === 84532 ? 'Base Sepolia' : 'Ethereum Sepolia',
                         status: 'Paid',
                         recipient_address: item.emp.wallet_address
