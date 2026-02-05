@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useAccount, usePublicClient } from 'wagmi';
+import { useAccount, usePublicClient, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import { normalize } from 'viem/ens';
 import {
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle2, Loader2, ArrowRight, Wallet, Globe } from 'lucide-react';
+import { CheckCircle2, Loader2, ArrowRight, Wallet, Globe, AlertCircle } from 'lucide-react';
 import { usePayroll } from '@/hooks/usePayroll';
 import { useBridgeKit } from '@/hooks/useBridgeKit';
 import { Employee } from '@/lib/supabase';
@@ -31,7 +31,8 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
     const [step, setStep] = useState<WizardStep>('REVIEW');
     const [processedSteps, setProcessedSteps] = useState<string[]>([]);
 
-    const { isConnected } = useAccount();
+    const { isConnected, chainId } = useAccount();
+    const { switchChain } = useSwitchChain();
     const publicClient = usePublicClient({ chainId: 11155111 }); // Sepolia lookup
 
     // Hooks
@@ -193,9 +194,28 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                                     <div className="text-xs text-muted-foreground">BridgeKit Transfers</div>
                                 </Card>
                             </div>
-                            <Button className="w-full" size="lg" onClick={startProcess}>
-                                Start Payments <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
+                            {chainId !== 5042002 ? (
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <div className="text-sm">
+                                            <p className="font-semibold">Wrong Network</p>
+                                            <p>Please switch to Arc Testnet to process local payments.</p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                                        size="lg"
+                                        onClick={() => switchChain({ chainId: 5042002 })}
+                                    >
+                                        Switch to Arc Testnet
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button className="w-full" size="lg" onClick={startProcess}>
+                                    Start Payments <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            )}
                         </div>
                     )}
 
