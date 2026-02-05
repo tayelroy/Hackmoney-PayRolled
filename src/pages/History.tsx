@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 import { History as HistoryIcon, Search, Filter, Download, ArrowUpRight, ExternalLink, ShieldCheck, RefreshCw } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatAddress, formatCurrency, formatDate } from "@/lib/index";
-import { createPublicClient, http, keccak256 } from "viem";
+import { createPublicClient, http, keccak256, decodeEventLog } from "viem";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -57,9 +57,25 @@ export default function History() {
       }
 
       // 3. Extract message bytes and hash them
-      const messageBytes = log.data;
+      // We must decode the log data to get the raw 'message' bytes
+      const messageSentABI = [{
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "bytes", "name": "message", "type": "bytes" }
+        ],
+        "name": "MessageSent",
+        "type": "event"
+      }];
+
+      const decodedLog = decodeEventLog({
+        abi: messageSentABI,
+        data: log.data,
+        topics: log.topics
+      });
+
+      const messageBytes = (decodedLog.args as any).message;
       const messageHash = keccak256(messageBytes);
-      console.log("Found Message Hash:", messageHash);
+      console.log("Found Message Hash (Decoded):", messageHash);
 
       // 4. Check Circle Attestation API (Sandbox for testnets)
       const response = await fetch(`https://iris-api-sandbox.circle.com/v1/attestations/${messageHash}`);
