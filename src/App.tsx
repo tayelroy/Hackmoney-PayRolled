@@ -13,6 +13,8 @@ import Employees from "@/pages/Employees";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
 import EmployeePortal from "@/pages/EmployeePortal";
+import EmployeeHistory from "@/pages/EmployeeHistory";
+import EmployeeConfig from "@/pages/EmployeeConfig";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,6 +78,22 @@ const App = () => {
                 element={
                   <AuthGuard allowedRoles={['employee']}>
                     <EmployeePortal />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path={ROUTE_PATHS.PORTAL_HISTORY}
+                element={
+                  <AuthGuard allowedRoles={['employee']}>
+                    <EmployeeHistory />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path={ROUTE_PATHS.PORTAL_CONFIG}
+                element={
+                  <AuthGuard allowedRoles={['employee']}>
+                    <EmployeeConfig />
                   </AuthGuard>
                 }
               />
