@@ -67,3 +67,24 @@ export const formatDate = (dateString: string): string => {
     day: 'numeric',
   });
 };
+
+/**
+ * Maps Chain IDs to human-readable network names
+ */
+export const getChainName = (chainId: number | string | null | undefined): string => {
+  if (!chainId) return 'Default (Arc)';
+  const id = typeof chainId === 'string' ? parseInt(chainId) : chainId;
+
+  const chains: Record<number, string> = {
+    1: 'Ethereum Mainnet',
+    11155111: 'Sepolia Testnet',
+    8453: 'Base',
+    84532: 'Base Sepolia',
+    10: 'Optimism',
+    42161: 'Arbitrum One',
+    137: 'Polygon',
+    5042002: 'Arc Testnet',
+  };
+
+  return chains[id] || `Chain ID: ${id}`;
+};
