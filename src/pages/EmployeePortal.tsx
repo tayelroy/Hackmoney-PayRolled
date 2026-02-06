@@ -7,8 +7,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate, formatAddress } from '@/lib/index';
-import { Loader2, Wallet, DollarSign, Calendar, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { Loader2, Wallet, DollarSign, Calendar, CheckCircle2, Clock, XCircle, FileText, Download, Building2, CreditCard, ExternalLink } from 'lucide-react';
 import { injected } from 'wagmi/connectors';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
@@ -66,6 +68,51 @@ export default function EmployeePortal() {
             setPaymentHistory([]);
         }
     }, [address, isConnected]);
+
+    const totalEarnings = paymentHistory.reduce((sum, p) => sum + Number(p.amount), 0);
+
+    const downloadPayslip = (payment: any) => {
+        const doc = new jsPDF();
+
+        // Brand Header
+        doc.setFillColor(16, 185, 129); // Emerald 600
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.text("PAYSLIP", 105, 25, { align: 'center' });
+
+        // Reset Text
+        doc.setTextColor(0, 0, 0);
+
+        // Employee Info
+        doc.setFontSize(12);
+        doc.text(`Employee: ${employeeData?.name}`, 14, 55);
+        doc.text(`Wallet: ${employeeData?.wallet_address}`, 14, 62);
+        doc.text(`Date: ${new Date(payment.created_at).toLocaleDateString()}`, 14, 69);
+        doc.text(`Payment ID: #${String(payment.id).slice(0, 8)}`, 14, 76);
+
+        // Financials table
+        autoTable(doc, {
+            startY: 90,
+            head: [['Description', 'Network', 'Reference', 'Amount']],
+            body: [[
+                'Payroll Disbursement',
+                payment.chain,
+                payment.tx_hash === 'pending' ? 'Pending' : payment.tx_hash.slice(0, 16) + '...',
+                formatCurrency(payment.amount)
+            ]],
+            theme: 'striped',
+            headStyles: { fillColor: [16, 185, 129] }
+        });
+
+        // Summary
+        const finalY = (doc as any).lastAutoTable.finalY + 10;
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Net Pay: ${formatCurrency(payment.amount)}`, 140, finalY);
+
+        doc.save(`Payslip_${String(payment.id).slice(0, 6)}.pdf`);
+    };
 
     // Handle Login
     const handleConnect = () => {
@@ -129,32 +176,62 @@ export default function EmployeePortal() {
                     <div className="grid gap-6 md:grid-cols-3">
 
                         {/* PROFILE CARD */}
-                        <Card className="p-6 md:col-span-1 space-y-6">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg">
-                                    {employeeData.name.charAt(0)}
+                        <div className="md:col-span-1 space-y-6">
+                            {/* DIGITAL ID CARD */}
+                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl p-6 border border-slate-700">
+                                {/* Holographic effect overlay */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+
+                                <div className="relative z-10 flex flex-col items-center">
+                                    <div className="w-20 h-20 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-3xl font-bold mb-4 shadow-inner">
+                                        {employeeData.name.charAt(0)}
+                                    </div>
+                                    <h2 className="text-xl font-bold tracking-wide">{employeeData.name}</h2>
+                                    <p className="text-xs text-slate-400 font-mono mt-1 mb-6">
+                                        {formatAddress(employeeData.wallet_address)}
+                                    </p>
+
+                                    <div className="w-full grid grid-cols-2 gap-2 text-center">
+                                        <div className="bg-white/5 rounded-lg p-2">
+                                            <p className="text-[10px] uppercase text-slate-400">Role</p>
+                                            <p className="font-medium text-sm">{employeeData.role || 'Staff'}</p>
+                                        </div>
+                                        <div className="bg-white/5 rounded-lg p-2">
+                                            <p className="text-[10px] uppercase text-slate-400">Status</p>
+                                            <div className="flex items-center justify-center gap-1">
+                                                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                                <span className="font-medium text-sm capitalize">{employeeData.status}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-full mt-6 pt-6 border-t border-white/10 flex justify-between items-end">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 className="w-4 h-4 text-emerald-400" />
+                                            <span className="font-bold tracking-widest text-sm">PAYROLLED</span>
+                                        </div>
+                                        <div className="text-[10px] text-slate-500">ID: {String(employeeData.id).slice(0, 8)}</div>
+                                    </div>
                                 </div>
-                                <h2 className="text-xl font-bold">{employeeData.name}</h2>
-                                <p className="text-sm text-muted-foreground break-all font-mono mt-1">
-                                    {formatAddress(employeeData.wallet_address)}
-                                </p>
                             </div>
 
-                            <div className="space-y-4 pt-4 border-t">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground">Status</span>
-                                    <Badge>{employeeData.status}</Badge>
+                            {/* TOTAL EARNINGS CARD */}
+                            <Card className="p-6 bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="p-2 bg-emerald-100 rounded-lg text-emerald-700">
+                                        <DollarSign className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-emerald-600 font-medium">Lifetime Earnings</p>
+                                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalEarnings)}</p>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground">Base Salary</span>
-                                    <span className="font-mono font-medium">{formatCurrency(employeeData.salary)}</span>
+                                <div className="h-2 w-full bg-emerald-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-emerald-500 w-[70%]" />
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-muted-foreground">Joined</span>
-                                    <span className="text-sm">{new Date(employeeData.created_at).toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                        </Card>
+                                <p className="text-xs text-emerald-600 mt-2 text-right">Top 10% of Earners</p>
+                            </Card>
+                        </div>
 
                         {/* PAYMENT HISTORY */}
                         <Card className="md:col-span-2 flex flex-col">
@@ -183,20 +260,31 @@ export default function EmployeePortal() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
+                                                <div className="text-right flex flex-col items-end gap-2">
                                                     <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                                                         {payment.chain}
                                                     </div>
-                                                    {payment.tx_hash !== 'pending' && (
-                                                        <a
-                                                            href={`https://testnet.arcscan.app/tx/${payment.tx_hash}`} // TODO: Dynamic explorer based on chain
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            className="text-xs text-blue-500 hover:underline"
+                                                    <div className="flex items-center gap-2">
+                                                        {payment.tx_hash !== 'pending' && (
+                                                            <a
+                                                                href={payment.chain.includes('Base') ? `https://sepolia.basescan.org/tx/${payment.tx_hash}` : `https://testnet.arcscan.app/tx/${payment.tx_hash}`}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="text-xs text-blue-500 hover:underline flex items-center gap-1"
+                                                            >
+                                                                Explorer <ExternalLink className="w-3 h-3" />
+                                                            </a>
+                                                        )}
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-6 w-6 text-slate-400 hover:text-emerald-600"
+                                                            title="Download Payslip"
+                                                            onClick={() => downloadPayslip(payment)}
                                                         >
-                                                            View TX
-                                                        </a>
-                                                    )}
+                                                            <Download className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}

@@ -51,8 +51,8 @@ export default function Home() {
       {/* Header / Logo Section */}
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-12 h-12 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10 shadow-lg overflow-hidden backdrop-blur-sm">
-            <img src="/public/payrolled.png" alt="PayRolled Logo" className="w-full h-full object-contain" />
+          <div className="w-12 h-12 flex items-center justify-center p-1 bg-black/5 rounded-2xl border border-black/10 shadow-lg overflow-hidden backdrop-blur-sm">
+            <img src="/payrolled1.png" alt="PayRolled Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight">PayRolled</span>
         </div>
