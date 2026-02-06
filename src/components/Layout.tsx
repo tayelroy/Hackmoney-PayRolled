@@ -31,9 +31,11 @@ export function Layout({ children }: LayoutProps) {
 
   const allNavigation = [
     { name: 'Overview', href: ROUTE_PATHS.DASHBOARD, icon: LayoutDashboard, roles: ['admin'] },
+    { name: 'Overview', href: ROUTE_PATHS.PORTAL, icon: LayoutDashboard, roles: ['employee'] },
     { name: 'Employees', href: ROUTE_PATHS.EMPLOYEES, icon: Users, roles: ['admin'] },
-    { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History, roles: ['admin', 'employee'] },
-    { name: 'My Portal', href: ROUTE_PATHS.PORTAL, icon: Wallet, roles: ['employee'] },
+    { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History, roles: ['admin'] },
+    { name: 'My History', href: ROUTE_PATHS.PORTAL_HISTORY, icon: History, roles: ['employee'] },
+    { name: 'My Config', href: ROUTE_PATHS.PORTAL_CONFIG, icon: Settings, roles: ['employee'] },
     { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings, roles: ['admin'] },
   ];
 
@@ -61,7 +63,9 @@ export function Layout({ children }: LayoutProps) {
     if (path === ROUTE_PATHS.EMPLOYEES) return ['Dashboard', 'Employees'];
     if (path === ROUTE_PATHS.HISTORY) return ['Dashboard', 'History'];
     if (path === ROUTE_PATHS.SETTINGS) return ['Dashboard', 'Settings'];
-    if (path === ROUTE_PATHS.PORTAL) return ['My Portal'];
+    if (path === ROUTE_PATHS.PORTAL_HISTORY) return ['My History'];
+    if (path === ROUTE_PATHS.PORTAL_CONFIG) return ['My Config'];
+    if (path === ROUTE_PATHS.PORTAL) return ['Portal Overview'];
     return ['Dashboard'];
   };
 
@@ -83,12 +87,12 @@ export function Layout({ children }: LayoutProps) {
             <NavLink
               key={item.name}
               to={item.href}
-              end={item.href === ROUTE_PATHS.DASHBOARD}
+              end={item.href === ROUTE_PATHS.DASHBOARD || item.href === ROUTE_PATHS.PORTAL}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
                     : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                 )
               }
@@ -213,13 +217,14 @@ export function Layout({ children }: LayoutProps) {
                   <NavLink
                     key={item.name}
                     to={item.href}
+                    end={item.href === ROUTE_PATHS.DASHBOARD || item.href === ROUTE_PATHS.PORTAL}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={({ isActive }) =>
                       cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-lg",
+                        "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-sidebar-foreground"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                       )
                     }
                   >
