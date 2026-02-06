@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAccount, usePublicClient, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
 import { normalize } from 'viem/ens';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
     Dialog,
     DialogContent,
@@ -220,6 +222,61 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         }
     }, [step, isArcConfirmed, processedSteps, handleArcComplete]);
 
+    const downloadReceipt = () => {
+        const doc = new jsPDF();
+        const date = new Date().toLocaleDateString();
+        const time = new Date().toLocaleTimeString();
+
+        // Header
+        doc.setFontSize(20);
+        doc.text("PayRolled Receipt", 14, 22);
+
+        doc.setFontSize(10);
+        doc.text(`Date: ${date} ${time}`, 14, 30);
+        doc.text(`Total Employees: ${employees.length}`, 14, 35);
+        doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 14, 40);
+
+        // Prepare table data
+        const tableData = employees.map(emp => {
+            // Find execution details if available
+            let status = "Pending/Failed";
+            let txHash = "-";
+            let chain = "Arc Testnet";
+
+            // Check Arc
+            if (classified?.arc.find(e => e.id === emp.id)) {
+                status = "Paid";
+                txHash = arcHash || "Pending";
+                chain = "Arc Testnet";
+            }
+            // Check Bridge
+            const bridgeItem = classified?.crossChain.find(i => i.emp.id === emp.id);
+            if (bridgeItem) {
+                status = "Paid (Cross-Chain)";
+                txHash = "Processed via BridgeKit"; // Simplified for receipt
+                chain = bridgeItem.chainId === 84532 ? "Base Sepolia" : "Eth Sepolia";
+            }
+
+            return [
+                emp.name,
+                emp.wallet_address,
+                `$${emp.salary}`,
+                chain,
+                status
+            ];
+        });
+
+        autoTable(doc, {
+            head: [['Employee', 'Wallet', 'Amount', 'Chain', 'Status']],
+            body: tableData,
+            startY: 50,
+            theme: 'striped',
+            headStyles: { fillColor: [16, 185, 129] } // Emerald-500
+        });
+
+        doc.save(`payroll-receipt-${Date.now()}.pdf`);
+    };
+
     return (
         <Dialog open={open} onOpenChange={(v) => {
             setOpen(v);
@@ -369,9 +426,14 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
                             </div>
                             <h3 className="font-bold text-lg">Payroll Complete!</h3>
                             <p className="text-muted-foreground text-sm">All payments processed successfully.</p>
-                            <Button className="mt-4" variant="outline" onClick={() => setOpen(false)}>
-                                Close
-                            </Button>
+                            <div className="flex justify-center gap-3 mt-4">
+                                <Button variant="outline" onClick={() => setOpen(false)}>
+                                    Close
+                                </Button>
+                                <Button onClick={downloadReceipt} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    Download Receipt
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
