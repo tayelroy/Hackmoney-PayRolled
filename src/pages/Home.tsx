@@ -2,7 +2,6 @@ import React from 'react';
 import { Layers, User, ArrowRightLeft } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { FeatureCard } from '@/components/Cards';
-import { IMAGES } from '@/assets/images';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -41,11 +40,11 @@ export default function Home() {
     <div className="relative min-h-screen w-full bg-background overflow-hidden flex flex-col">
       {/* Background Layer with Institutional Depth */}
       <div className="absolute inset-0 z-0">
-        <img
+        {/* <img
           src={IMAGES.DASHBOARD_BG_1}
           alt="Background"
           className="w-full h-full object-cover opacity-20 grayscale"
-        />
+        /> */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
       </div>
 
@@ -53,7 +52,7 @@ export default function Home() {
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-12 h-12 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10 shadow-lg overflow-hidden backdrop-blur-sm">
-            <img src="/logo.png" alt="PayRolled Logo" className="w-full h-full object-contain" />
+            <img src="/public/payrolled.png" alt="PayRolled Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight">PayRolled</span>
         </div>
@@ -96,7 +95,7 @@ export default function Home() {
         {/* Social Proof / Feature Grid */}
         <div className="mt-24 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <FeatureCard
-            icon={<img src="/logo.png" alt="Arc" className="w-5 h-5 object-contain opacity-80" />}
+            icon={<img src="/payrolled.png" alt="Arc" className="w-5 h-5 object-contain opacity-80" />}
             title="Powered by Arc"
             description="Built on the world's most capital-efficient Layer-1 for stablecoin finance."
           />

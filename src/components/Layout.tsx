@@ -73,7 +73,7 @@ export function Layout({ children }: LayoutProps) {
       <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 border-r border-sidebar-border bg-sidebar">
         <div className="p-6 flex items-center gap-3">
           <div className="w-12 h-12 flex items-center justify-center p-1 rounded-2xl border border-white/10 shadow-lg overflow-hidden backdrop-blur-sm">
-            <img src="/public/favicon.ico" alt="PayRolled Logo" className="w-full h-full object-contain" />
+            <img src="/favicon.ico" alt="PayRolled Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight">PayRolled</span>
         </div>
