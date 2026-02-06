@@ -21,10 +21,15 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
             if (role === 'employee') {
                 // Employees trying to access Admin pages -> Go to Portal
                 navigate(ROUTE_PATHS.PORTAL, { replace: true });
-            } else if (role === 'admin' || role === 'disconnected') {
-                // Admins/Guests trying to access Employee pages -> Go to Dashboard (or Home)
-                // If disconnected, useWallet handles the Home redirect usually, but let's be safe
+            } else if (role === 'admin') {
+                // Admins trying to access Employee pages -> Go to Dashboard
                 navigate(ROUTE_PATHS.DASHBOARD, { replace: true });
+            } else if (role === 'unauthorized') {
+                // Unauthorized -> Home
+                navigate(ROUTE_PATHS.HOME, { replace: true });
+                // Optional: Show toast "Access Denied"
+            } else if (role === 'disconnected') {
+                navigate(ROUTE_PATHS.HOME, { replace: true });
             }
         }
     }, [role, allowedRoles, navigate]);

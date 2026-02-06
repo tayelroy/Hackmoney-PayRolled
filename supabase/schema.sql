@@ -35,8 +35,26 @@ create table payment_history (
 alter table payment_history enable row level security;
 
 -- Create Policy: Allow Public Access (Hackathon Mode)
+-- Create Policy: Allow Public Access (Hackathon Mode)
 create policy "Allow Public Access on history"
 on payment_history
 for all
 using (true)
 with check (true);
+
+-- Create Admin Allowlist Table
+create table admins (
+  id bigint primary key generated always as identity,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  wallet_address text not null unique,
+  name text
+);
+
+-- Enable RLS
+alter table admins enable row level security;
+
+-- Create Policy
+create policy "Public Read Admins"
+on admins
+for select
+using (true);
