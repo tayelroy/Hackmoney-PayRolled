@@ -17,6 +17,7 @@ import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useWallet } from '@/hooks/useWallet';
 import { springPresets } from '@/lib/motion';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,14 +27,33 @@ export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { address, disconnect, networkName } = useWallet();
   const location = useLocation();
+  const { role } = useUserRole();
 
-  const navigation = [
-    { name: 'Overview', href: ROUTE_PATHS.DASHBOARD, icon: LayoutDashboard },
-    { name: 'Employees', href: ROUTE_PATHS.EMPLOYEES, icon: Users },
-    { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History },
-    { name: 'My Portal', href: ROUTE_PATHS.PORTAL, icon: Wallet },
-    { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings },
+  const allNavigation = [
+    { name: 'Overview', href: ROUTE_PATHS.DASHBOARD, icon: LayoutDashboard, roles: ['admin'] },
+    { name: 'Employees', href: ROUTE_PATHS.EMPLOYEES, icon: Users, roles: ['admin'] },
+    { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History, roles: ['admin', 'employee'] },
+    { name: 'My Portal', href: ROUTE_PATHS.PORTAL, icon: Wallet, roles: ['employee'] },
+    { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings, roles: ['admin'] },
   ];
+
+  // Logic: 
+  // If role is 'employee', they use Portal. They don't need general History page (which is all payrolls).
+  // But strictly speaking, standard History page shows ALL payments. Maybe employee wants to see that?
+  // Let's assume Employee only sees Portal for now to keep it clean, as per user request ("vice versa").
+  // If I am an employee, I should NOT see 'History' page meant for Admins.
+  // So 'History' should be 'admin' only?
+  // Portal has its own history. 
+  // Let's refine the roles in the list above.
+
+  const navigation = allNavigation.filter(item => {
+    if (role === 'loading' || role === 'disconnected') return false;
+
+    // Override History to be Admin only if we want strict separation
+    if (item.name === 'History' && role === 'employee') return false;
+
+    return item.roles.includes(role);
+  });
 
   const getBreadcrumbs = () => {
     const path = location.pathname;
@@ -41,6 +61,7 @@ export function Layout({ children }: LayoutProps) {
     if (path === ROUTE_PATHS.EMPLOYEES) return ['Dashboard', 'Employees'];
     if (path === ROUTE_PATHS.HISTORY) return ['Dashboard', 'History'];
     if (path === ROUTE_PATHS.SETTINGS) return ['Dashboard', 'Settings'];
+    if (path === ROUTE_PATHS.PORTAL) return ['My Portal'];
     return ['Dashboard'];
   };
 

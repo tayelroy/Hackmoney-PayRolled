@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { WalletProviders } from "@/components/WalletProviders";
 import { ROUTE_PATHS } from "@/lib/index";
+import { AuthGuard } from "@/components/AuthGuard";
 
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
@@ -29,30 +30,56 @@ const App = () => {
         <TooltipProvider>
           <BrowserRouter>
             <Routes>
+              {/* PUBLIC ROUTES */}
               <Route
                 path={ROUTE_PATHS.HOME}
                 element={<Home />}
               />
+
+              {/* ADMIN ROUTES */}
               <Route
                 path={ROUTE_PATHS.DASHBOARD}
-                element={<Dashboard />}
+                element={
+                  <AuthGuard allowedRoles={['admin']}>
+                    <Dashboard />
+                  </AuthGuard>
+                }
               />
               <Route
                 path={ROUTE_PATHS.EMPLOYEES}
-                element={<Employees />}
+                element={
+                  <AuthGuard allowedRoles={['admin']}>
+                    <Employees />
+                  </AuthGuard>
+                }
               />
               <Route
                 path={ROUTE_PATHS.HISTORY}
-                element={<History />}
-              />
-              <Route
-                path={ROUTE_PATHS.PORTAL}
-                element={<EmployeePortal />}
+                element={
+                  <AuthGuard allowedRoles={['admin']}>
+                    <History />
+                  </AuthGuard>
+                }
               />
               <Route
                 path={ROUTE_PATHS.SETTINGS}
-                element={<Settings />}
+                element={
+                  <AuthGuard allowedRoles={['admin']}>
+                    <Settings />
+                  </AuthGuard>
+                }
               />
+
+              {/* EMPLOYEE ROUTES */}
+              <Route
+                path={ROUTE_PATHS.PORTAL}
+                element={
+                  <AuthGuard allowedRoles={['employee']}>
+                    <EmployeePortal />
+                  </AuthGuard>
+                }
+              />
+
               <Route
                 path="*"
                 element={<Home />}
