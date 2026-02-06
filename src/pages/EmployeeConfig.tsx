@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Globe, ExternalLink, ShieldCheck, AlertCircle, Building2, Wallet } from 'lucide-react';
 import { injected } from 'wagmi/connectors';
 import { usePayrollConfig } from '@/hooks/usePayrollConfig';
-import { formatAddress } from '@/lib/index';
+import { formatAddress, getChainName } from '@/lib/index';
 
 export default function EmployeeConfig() {
     const { address, isConnected } = useAccount();
@@ -79,7 +79,7 @@ export default function EmployeeConfig() {
                                         <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Delivery Chain</p>
                                         <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-emerald-100 shadow-sm">
                                             <span className="font-mono text-emerald-600 font-bold">
-                                                {preferredChainId === 84532 ? 'Base Sepolia' : preferredChainId?.toString() || 'Default (Arc)'}
+                                                {getChainName(preferredChainId)}
                                             </span>
                                         </div>
                                     </div>

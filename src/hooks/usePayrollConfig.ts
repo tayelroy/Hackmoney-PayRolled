@@ -1,6 +1,7 @@
 import { usePublicClient, useEnsName, useEnsAvatar } from 'wagmi';
 import { normalize } from 'viem/ens';
 import { useState, useEffect } from 'react';
+import { sepolia } from 'wagmi/chains';
 
 export interface PayrollConfig {
     preferredChainId: number | null;
@@ -11,9 +12,15 @@ export interface PayrollConfig {
 }
 
 export function usePayrollConfig(address: string | undefined): PayrollConfig {
-    const { data: ensName } = useEnsName({ address: address as `0x${string}` | undefined });
-    const { data: ensAvatar } = useEnsAvatar({ name: ensName || undefined });
-    const publicClient = usePublicClient({ chainId: 11155111 }); // Sepolia for ENS lookup
+    const { data: ensName } = useEnsName({
+        address: address as `0x${string}` | undefined,
+        chainId: sepolia.id
+    });
+    const { data: ensAvatar } = useEnsAvatar({
+        name: ensName || undefined,
+        chainId: sepolia.id
+    });
+    const publicClient = usePublicClient({ chainId: sepolia.id });
 
     // Default State
     const [config, setConfig] = useState<PayrollConfig>({
