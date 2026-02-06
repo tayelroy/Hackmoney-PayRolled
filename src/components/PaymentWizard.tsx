@@ -277,6 +277,8 @@ export function PaymentWizard({ employees, totalAmount }: PaymentWizardProps) {
         doc.save(`payroll-receipt-${Date.now()}.pdf`);
     };
 
+
+
     return (
         <Dialog open={open} onOpenChange={(v) => {
             setOpen(v);
