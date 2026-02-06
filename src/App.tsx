@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import Employees from "@/pages/Employees";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
+import EmployeePortal from "@/pages/EmployeePortal";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,10 @@ const App = () => {
               <Route
                 path={ROUTE_PATHS.HISTORY}
                 element={<History />}
+              />
+              <Route
+                path={ROUTE_PATHS.PORTAL}
+                element={<EmployeePortal />}
               />
               <Route
                 path={ROUTE_PATHS.SETTINGS}

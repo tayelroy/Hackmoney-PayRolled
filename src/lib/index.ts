@@ -9,6 +9,7 @@ export const ROUTE_PATHS = {
   EMPLOYEES: '/dashboard/employees',
   HISTORY: '/dashboard/history',
   SETTINGS: '/dashboard/settings',
+  PORTAL: '/portal',
 } as const;
 
 export type RoutePath = typeof ROUTE_PATHS[keyof typeof ROUTE_PATHS];

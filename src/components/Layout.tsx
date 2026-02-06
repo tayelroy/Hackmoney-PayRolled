@@ -31,6 +31,7 @@ export function Layout({ children }: LayoutProps) {
     { name: 'Overview', href: ROUTE_PATHS.DASHBOARD, icon: LayoutDashboard },
     { name: 'Employees', href: ROUTE_PATHS.EMPLOYEES, icon: Users },
     { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History },
+    { name: 'My Portal', href: ROUTE_PATHS.PORTAL, icon: Wallet },
     { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings },
   ];
 
