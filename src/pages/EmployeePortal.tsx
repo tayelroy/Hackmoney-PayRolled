@@ -104,8 +104,8 @@ export default function EmployeePortal() {
                         <NavLink to={ROUTE_PATHS.PORTAL_CONFIG} className="group h-full">
                             <Card className="p-8 h-full hover:shadow-lg transition-all border-blue-100 bg-gradient-to-br from-white to-blue-50/20 active:scale-[0.98]">
                                 <div className="flex flex-col h-full">
-                                    <div className="p-3 bg-blue-100 rounded-xl text-blue-600 w-fit mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                        <Settings className="w-6 h-6" />
+                                    <div className="p-3 bg-blue-100 rounded-xl w-fit mb-6 group-hover:bg-blue-200 transition-colors">
+                                        <img src="/ethereum-name-service-ens-logo.png" alt="ENS" className="w-8 h-8 object-contain" />
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 mb-2">Payroll Config</h3>
                                     <p className="text-sm text-slate-500 mb-6 flex-1">

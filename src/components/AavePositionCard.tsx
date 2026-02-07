@@ -15,8 +15,8 @@ export function AavePositionCard({ address, onDeposit }: AavePositionCardProps) 
             onClick={onDeposit}
         >
             <div className="flex flex-col h-full">
-                <div className="p-3 bg-[#be95be]/10 rounded-xl text-[#be95be] w-fit mb-6 group-hover:bg-[#be95be] group-hover:text-white transition-colors">
-                    <TrendingUp className="w-6 h-6" />
+                <div className="p-3 bg-[#be95be]/10 rounded-xl w-fit mb-6 group-hover:bg-[#be95be]/20 transition-colors">
+                    <img src="/aave-aave-logo.png" alt="Aave" className="w-8 h-8 object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Aave Savings</h3>
                 <p className="text-sm text-slate-500 mb-6 flex-1">

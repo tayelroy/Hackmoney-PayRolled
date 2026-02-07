@@ -17,8 +17,8 @@ export function UniswapPositionCard({ onSwapClick, onAddLiquidityClick }: Uniswa
             onClick={onSwapClick}
         >
             <div className="flex flex-col h-full">
-                <div className="p-3 bg-[#cc5db3]/10 rounded-xl text-[#cc5db3] w-fit mb-6 group-hover:bg-[#cc5db3] group-hover:text-white transition-colors">
-                    <ArrowRightLeft className="w-6 h-6" />
+                <div className="p-3 bg-[#cc5db3]/10 rounded-xl w-fit mb-6 group-hover:bg-[#cc5db3]/20 transition-colors">
+                    <img src="/uniswap-uni-logo.png" alt="Uniswap" className="w-8 h-8 object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Uniswap Auto-Invest</h3>
                 <p className="text-sm text-slate-500 mb-6 flex-1">
