@@ -12,6 +12,8 @@ export const ROUTE_PATHS = {
   PORTAL: '/portal',
   PORTAL_HISTORY: '/portal/history',
   PORTAL_CONFIG: '/portal/config',
+  PORTAL_AAVE: '/portal/aave',
+  PORTAL_UNISWAP: '/portal/uniswap',
   DEV: '/dev',
 } as const;
 

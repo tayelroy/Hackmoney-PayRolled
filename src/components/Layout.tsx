@@ -10,7 +10,9 @@ import {
   X,
   ChevronRight,
   Wallet,
-  Layers
+  Layers,
+  TrendingUp,
+  ArrowRightLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ROUTE_PATHS, formatAddress } from '@/lib/index';
@@ -36,6 +38,8 @@ export function Layout({ children }: LayoutProps) {
     { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History, roles: ['admin'] },
     { name: 'My History', href: ROUTE_PATHS.PORTAL_HISTORY, icon: History, roles: ['employee'] },
     { name: 'My Config', href: ROUTE_PATHS.PORTAL_CONFIG, icon: Settings, roles: ['employee'] },
+    { name: 'Aave Savings', href: ROUTE_PATHS.PORTAL_AAVE, icon: TrendingUp, roles: ['employee'] },
+    { name: 'Uniswap Invest', href: ROUTE_PATHS.PORTAL_UNISWAP, icon: ArrowRightLeft, roles: ['employee'] },
     { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings, roles: ['admin'] },
   ];
 
