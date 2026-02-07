@@ -12,6 +12,7 @@ export const ROUTE_PATHS = {
   PORTAL: '/portal',
   PORTAL_HISTORY: '/portal/history',
   PORTAL_CONFIG: '/portal/config',
+  DEV: '/dev',
 } as const;
 
 export type RoutePath = typeof ROUTE_PATHS[keyof typeof ROUTE_PATHS];

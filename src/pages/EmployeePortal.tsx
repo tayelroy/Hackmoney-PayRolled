@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAccount, useConnect } from 'wagmi';
 import { NavLink } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
@@ -7,11 +8,14 @@ import { History, Settings, ShieldCheck, Wallet, ArrowRight, Building2 } from 'l
 import { injected } from 'wagmi/connectors';
 import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useUserRole } from '@/hooks/useUserRole';
+import { AavePositionCard } from '@/components/AavePositionCard';
+import { AaveDepositModal } from '@/components/AaveDepositModal';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
     const { connect } = useConnect();
     const { role } = useUserRole();
+    const [aaveModalOpen, setAaveModalOpen] = useState(false);
 
     if (!isConnected) {
         return (
@@ -98,7 +102,17 @@ export default function EmployeePortal() {
                             </div>
                         </Card>
                     </NavLink>
+
+                    {/* AAVE INVESTMENTS CTA */}
+                    <AavePositionCard address={address} onDeposit={() => setAaveModalOpen(true)} />
                 </div>
+
+                {/* Aave Deposit Modal */}
+                <AaveDepositModal
+                    open={aaveModalOpen}
+                    onOpenChange={setAaveModalOpen}
+                    usdcTokenAddress="0x036CbD53842c5426634e7929541eC2318f3dCF7e" // Base Sepolia USDC
+                />
             </div>
         </Layout>
     );

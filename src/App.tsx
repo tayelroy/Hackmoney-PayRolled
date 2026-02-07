@@ -15,7 +15,7 @@ import Settings from "@/pages/Settings";
 import EmployeePortal from "@/pages/EmployeePortal";
 import EmployeeHistory from "@/pages/EmployeeHistory";
 import EmployeeConfig from "@/pages/EmployeeConfig";
-import { DevRoleToggle } from "@/components/DevRoleToggle";
+import DevMode from "@/pages/DevMode";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -99,6 +99,13 @@ const App = () => {
                 }
               />
 
+              {/* Dev Mode Route */}
+              <Route
+                path="/dev"
+                element={<DevMode />}
+              />
+
+              {/* Catch-all route */}
               <Route
                 path="*"
                 element={<Home />}
@@ -106,7 +113,6 @@ const App = () => {
             </Routes>
           </BrowserRouter>
           <Toaster />
-          <DevRoleToggle />
           <Sonner position="top-right" expand={false} richColors />
         </TooltipProvider>
       </QueryClientProvider>

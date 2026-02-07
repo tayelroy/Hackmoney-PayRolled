@@ -34,13 +34,19 @@ export function EmployeeRow({ employee }: EmployeeRowProps) {
     }).format(employee.salary);
 
     // Helper for chain/token display
-    const getChainName = (chainId: number) => {
-        if (chainId === 11155111) return "Sepolia";
-        if (chainId === 5042002) return "Arc Testnet";
-        if (chainId === 8453) return "Base";
-        return `Chain (${chainId})`;
+    const getChainName = (chainId: number): string => {
+        switch (chainId) {
+            // --- TESTNETS ---
+            case 11155111: return "Sepolia";             // Ethereum Sepolia
+            case 5042002: return "Arc Testnet";         // Arc (Circle)
+            case 84532: return "Base Sepolia";        // Base Testnet
+            case 11155420: return "Optimism Sepolia";    // OP Testnet
+            case 421614: return "Arbitrum Sepolia";    // Arbitrum Testnet
+            case 80002: return "Polygon Amoy";        // Polygon Testnet
+            case 43113: return "Avalanche Fuji";      // Avalanche Testnet
+            default: return `Chain ID: ${chainId}`;
+        }
     };
-
     const chainDisplay = isLoadingPrefs
         ? "Loading..."
         : `${getChainName(preferredChain)} • ${preferredToken || "USDC"}`;

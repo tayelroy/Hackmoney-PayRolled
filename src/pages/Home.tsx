@@ -83,6 +83,15 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col items-center gap-4">
+            {/* Dev Mode Notice */}
+            {import.meta.env.VITE_DEV_MODE === 'true' && (
+              <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-2">
+                <p className="text-sm text-yellow-900 font-medium">
+                  🚧 Dev Mode Active - <a href="/dev" className="underline hover:text-yellow-700">Choose your role →</a>
+                </p>
+              </div>
+            )}
+
             <div className="scale-125 md:scale-150 py-8">
               <ConnectButton />
             </div>
