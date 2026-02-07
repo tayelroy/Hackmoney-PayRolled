@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, User, ArrowRightLeft } from 'lucide-react';
+import { Layers, User, ArrowRightLeft, Power } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { FeatureCard } from '@/components/Cards';
 import { Button } from '@/components/ui/button';
@@ -70,15 +70,15 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              v2.0 Now Live on Arc Mainnet
+              v1.0 Now Live on Arc 
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
               Global Payroll, <br />
               <span className="text-primary">Local Liquidity.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Streamline your treasury on Arc. Pay your team on any chain instantly
-              with institutional-grade security and automated compliance.
+              Streamline your wages on Arc. Pay your team on any chain instantly
+              with institutional-grade security and automated DeFi protocols we love.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export default function Home() {
               <ConnectButton />
             </div>
             <p className="text-xs text-muted-foreground uppercase tracking-widest">
-              Supported Assets: USDC • ARCO • WETH • WBTC
+              Supported Assets: USDC • WETH
             </p>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function Home() {
         {/* Social Proof / Feature Grid */}
         <div className="mt-24 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <FeatureCard
-            icon={<img src="/payrolled.png" alt="Arc" className="w-5 h-5 object-contain opacity-80" />}
+            icon={<Power className="w-5 h-5 text-primary" />}
             title="Powered by Arc"
             description="Built on the world's most capital-efficient Layer-1 for stablecoin finance."
           />
@@ -115,7 +115,7 @@ export default function Home() {
           />
           <FeatureCard
             icon={<ArrowRightLeft className="w-5 h-5 text-primary" />}
-            title="Bridged by LI.FI"
+            title="Liquidity with Aave & Uniswap"
             description="Enterprise-grade cross-chain liquidity protocol for global distribution."
           />
         </div>
