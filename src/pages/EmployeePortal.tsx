@@ -8,14 +8,14 @@ import { History, Settings, ShieldCheck, Wallet, ArrowRight, Building2 } from 'l
 import { injected } from 'wagmi/connectors';
 import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useUserRole } from '@/hooks/useUserRole';
-import { AavePositionCard } from '@/components/AavePositionCard';
-import { AaveDepositModal } from '@/components/AaveDepositModal';
+import { UniswapPositionCard } from '@/components/UniswapPositionCard';
+import { UniswapSwapModal } from '@/components/UniswapSwapModal';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
     const { connect } = useConnect();
     const { role } = useUserRole();
-    const [aaveModalOpen, setAaveModalOpen] = useState(false);
+    const [swapModalOpen, setSwapModalOpen] = useState(false);
 
     if (!isConnected) {
         return (
@@ -103,15 +103,14 @@ export default function EmployeePortal() {
                         </Card>
                     </NavLink>
 
-                    {/* AAVE INVESTMENTS CTA */}
-                    <AavePositionCard address={address} onDeposit={() => setAaveModalOpen(true)} />
+                    {/* UNISWAP V4 AUTO-INVEST */}
+                    <UniswapPositionCard onSwapClick={() => setSwapModalOpen(true)} />
                 </div>
 
-                {/* Aave Deposit Modal */}
-                <AaveDepositModal
-                    open={aaveModalOpen}
-                    onOpenChange={setAaveModalOpen}
-                    usdcTokenAddress="0x036CbD53842c5426634e7929541eC2318f3dCF7e" // Base Sepolia USDC
+                {/* Uniswap Swap Modal */}
+                <UniswapSwapModal
+                    open={swapModalOpen}
+                    onOpenChange={setSwapModalOpen}
                 />
             </div>
         </Layout>
