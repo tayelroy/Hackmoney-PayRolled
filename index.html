@@ -9,8 +9,16 @@
   <meta name="author" content="PayRolled Treasury Solutions" />
   <link rel="icon" type="image/png" href="/payro.png" />
   <script>
+    // Polyfills for Web3 library compatibility
+    if (typeof globalThis === 'undefined') {
+      window.globalThis = window;
+    }
     if (typeof global === 'undefined') {
-      window.global = window;
+      window.global = globalThis;
+    }
+    // Ensure BigInt is accessible from globalThis
+    if (typeof globalThis.BigInt === 'undefined' && typeof BigInt !== 'undefined') {
+      globalThis.BigInt = BigInt;
     }
   </script>
 
