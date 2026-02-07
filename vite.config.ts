@@ -269,6 +269,8 @@ export default defineConfig(({ mode }) => {
         "react-router-dom": path.resolve(__dirname, "./src/lib/react-router-dom-proxy.tsx"),
         // Original react-router-dom under a different name
         "react-router-dom-original": "react-router-dom",
+        // JSBI alias for Uniswap SDK BigInt compatibility
+        "jsbi": path.resolve(__dirname, "./node_modules/jsbi/dist/jsbi-cjs.js"),
       },
     },
     define: {
