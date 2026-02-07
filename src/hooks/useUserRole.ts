@@ -17,6 +17,13 @@ export function useUserRole() {
 
             setRole('loading');
 
+            // Development Mode: Grant admin access to any connected wallet
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.warn('🚧 DEV MODE ACTIVE: Granting admin access to', address);
+                setRole('admin');
+                return;
+            }
+
             try {
                 // 1. Check if Admin
                 const { data: adminData, error: adminError } = await supabase

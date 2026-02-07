@@ -38,6 +38,21 @@ PayRolled is a modern Web3 payroll management system designed for seamless autom
     npx tsc --noEmit -p tsconfig.app.json --strict
     ```
 
+## 🧪 Development Mode
+
+For hackathon demos and local testing, you can enable **Development Mode** to bypass authentication:
+
+1. Copy `.env.example` to `.env` if you haven't already
+2. Set `VITE_DEV_MODE=true` in your `.env` file
+3. Any connected wallet will automatically get **admin access**
+
+```bash
+# .env
+VITE_DEV_MODE=true
+```
+
+> **⚠️ WARNING**: Never enable dev mode in production! This bypasses all authentication checks and grants admin access to anyone.
+
 ## 🔗 Integration Guidelines
 
 ### Backend & API
