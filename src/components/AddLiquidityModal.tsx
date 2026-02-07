@@ -204,8 +204,8 @@ export function AddLiquidityModal({ open, onOpenChange }: AddLiquidityModalProps
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
                         <div className="font-medium text-blue-900 mb-1">Pool Details</div>
                         <ul className="text-blue-700 space-y-1 text-xs">
-                            <li>• Fee: 0.3% (3000 bps)</li>
-                            <li>• Tick Spacing: 60</li>
+                            <li>• Fee: 1% (10000 bps)</li>
+                            <li>• Tick Spacing: 200</li>
                             <li>• Full Range Position</li>
                             <li>• Creates pool if doesn't exist</li>
                         </ul>

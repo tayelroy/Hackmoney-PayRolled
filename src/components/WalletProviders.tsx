@@ -3,7 +3,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { createConfig, http, WagmiProvider } from 'wagmi';
 import { type Chain } from 'viem';
 import { injected } from 'wagmi/connectors';
-import { sepolia, baseSepolia } from 'wagmi/chains';
 
 /**
  * Arc Testnet Configuration
@@ -26,6 +25,8 @@ const arcTestnet = {
   },
   testnet: true,
 } as const satisfies Chain;
+
+import { sepolia, baseSepolia } from 'wagmi/chains';
 
 export const config = createConfig({
   chains: [arcTestnet, sepolia, baseSepolia],
