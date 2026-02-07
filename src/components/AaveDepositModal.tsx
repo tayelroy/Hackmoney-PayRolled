@@ -23,62 +23,45 @@ export function AaveDepositModal({ open, onOpenChange, usdcTokenAddress = BASE_S
     const { switchChain } = useSwitchChain();
     const [amount, setAmount] = useState('');
     const { depositToAave, status, error, txHash, reset } = useAaveDirect();
-    const [needsChainSwitch, setNeedsChainSwitch] = useState(false);
-
-    // Check if on correct chain when modal opens
-    useEffect(() => {
-        console.log('[Aave Modal] Chain check:', {
-            open,
-            currentChainId: chainId,
-            expectedChainId: AAVE_BASE_SEPOLIA.CHAIN_ID,
-            needsSwitch: chainId !== AAVE_BASE_SEPOLIA.CHAIN_ID
-        });
-
-        if (open && chainId !== AAVE_BASE_SEPOLIA.CHAIN_ID) {
-            setNeedsChainSwitch(true);
-        } else {
-            setNeedsChainSwitch(false);
-        }
-    }, [open, chainId]);
+    // Check if on Base Sepolia
+    const isBaseSepolia = chainId === AAVE_BASE_SEPOLIA.CHAIN_ID;
+    const needsChainSwitch = open && !isBaseSepolia;
 
     const [isSwitching, setIsSwitching] = useState(false);
 
     const handleSwitchChain = async () => {
         setIsSwitching(true);
         try {
-            console.log('[Aave Modal] Attempting to switch to Base Sepolia:', AAVE_BASE_SEPOLIA.CHAIN_ID);
-            if (!switchChain) {
-                console.error('[Aave Modal] switchChain is undefined');
-                alert('Chain switching not available. Please manually switch to Base Sepolia in your wallet.');
-                setIsSwitching(false);
-                return;
-            }
-
-            console.log('[Aave Modal] Calling switchChain...');
             await switchChain({ chainId: AAVE_BASE_SEPOLIA.CHAIN_ID });
-            console.log('[Aave Modal] Successfully switched to Base Sepolia');
-            setNeedsChainSwitch(false);
         } catch (err: any) {
             console.error('[Aave Modal] Failed to switch chain:', err);
-            // User rejected the request
-            if (err.code === 4001) {
-                console.log('[Aave Modal] User rejected chain switch');
-            } else {
-                alert(`Failed to switch chain: ${err.message || 'Unknown error'}`);
-            }
         } finally {
             setIsSwitching(false);
         }
     };
 
+
+
+    // Removed old extensive logging switchChain logic to keep it clean
+    // The implementation above handles it.
+
     const handleDeposit = async () => {
-        if (!amount || !address || !usdcTokenAddress) return;
+        if (!amount || !address) return;
+
+        // Determine correct token address based on chain
+        // defaulting to the prop if we are on an unknown chain (fallback)
+        let targetTokenAddress = usdcTokenAddress;
+        if (chainId === AAVE_BASE_SEPOLIA.CHAIN_ID) {
+            targetTokenAddress = AAVE_BASE_SEPOLIA.USDC;
+        }
+
+        if (!targetTokenAddress) return;
 
         // Convert amount to USDC smallest units (6 decimals)
         const usdcAmount = (parseFloat(amount) * 1_000_000).toString();
 
-        // Call direct deposit with amount string
-        await depositToAave(amount);
+        // Call direct deposit with amount string and token address
+        await depositToAave(amount, targetTokenAddress);
     };
 
     const handleClose = () => {
@@ -150,14 +133,25 @@ export function AaveDepositModal({ open, onOpenChange, usdcTokenAddress = BASE_S
                     {status === 'approving' && (
                         <Alert>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            <AlertDescription>Approving USDC for Aave...</AlertDescription>
+                            <AlertDescription>Approving tokens...</AlertDescription>
                         </Alert>
                     )}
 
-                    {status === 'depositing' && (
-                        <Alert>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <AlertDescription>Supplying USDC to Aave Pool...</AlertDescription>
+                    {status === 'error' && error?.includes('allowance') && (
+                        <Alert className="border-yellow-200 bg-yellow-50">
+                            <AlertCircle className="h-4 w-4 text-yellow-600" />
+                            <AlertDescription className="text-yellow-800">
+                                <span className="font-bold">Approve Failed:</span> You might not have enough ETH for gas.
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
+                    {status === 'error' && (
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>
+                                {error || 'Transaction failed'}
+                            </AlertDescription>
                         </Alert>
                     )}
 
@@ -210,7 +204,7 @@ export function AaveDepositModal({ open, onOpenChange, usdcTokenAddress = BASE_S
                     {status !== 'success' && (
                         <Button
                             onClick={handleDeposit}
-                            disabled={!amount || parseFloat(amount) <= 0 || status !== 'idle' && status !== 'error' || needsChainSwitch}
+                            disabled={!amount || parseFloat(amount) <= 0 || status !== 'idle' && status !== 'error' || !isBaseSepolia}
                         >
                             {status === 'approving' ? (
                                 <>

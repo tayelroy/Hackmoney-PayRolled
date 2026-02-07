@@ -19,6 +19,8 @@ export const AAVE_BASE_SEPOLIA = {
     CHAIN_ID: 84532, // Base Sepolia
 } as const;
 
+// AAVE_SEPOLIA removed as we only support Base Sepolia for this demo due to USDC incompatibility.
+
 // Minimal Aave Pool ABI - only the supply function we need
 export const AAVE_POOL_ABI = [
     {
@@ -49,6 +51,43 @@ export const AAVE_ATOKEN_ABI = [
         name: 'decimals',
         outputs: [{ internalType: 'uint8', name: '', type: 'uint8' }],
         stateMutability: 'view',
+        type: 'function',
+    },
+] as const;
+
+export const ERC20_ABI = [
+    {
+        constant: true,
+        inputs: [{ name: '_owner', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [{ name: 'balance', type: 'uint256' }],
+        type: 'function',
+    },
+    {
+        constant: true,
+        inputs: [],
+        name: 'decimals',
+        outputs: [{ name: '', type: 'uint8' }],
+        type: 'function',
+    },
+    {
+        constant: false,
+        inputs: [
+            { name: '_spender', type: 'address' },
+            { name: '_value', type: 'uint256' },
+        ],
+        name: 'approve',
+        outputs: [{ name: '', type: 'bool' }],
+        type: 'function',
+    },
+    {
+        constant: true,
+        inputs: [
+            { name: '_owner', type: 'address' },
+            { name: '_spender', type: 'address' },
+        ],
+        name: 'allowance',
+        outputs: [{ name: '', type: 'uint256' }],
         type: 'function',
     },
 ] as const;

@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
-import { usePublicClient, useWalletClient, useAccount } from 'wagmi';
+import { usePublicClient, useWalletClient, useAccount, useChainId } from 'wagmi';
 import { parseUnits, maxUint256 } from 'viem';
-import { AAVE_BASE_SEPOLIA, AAVE_POOL_ABI } from '@/lib/aave';
-import { ERC20_ABI } from '@/lib/uniswap-v4'; // Reusing ERC20 ABI
+import { AAVE_BASE_SEPOLIA, AAVE_POOL_ABI, ERC20_ABI } from '@/lib/aave';
 
 export type AaveDepositStatus = 'idle' | 'approving' | 'depositing' | 'success' | 'error';
 
@@ -10,6 +9,7 @@ export function useAaveDirect() {
     const { address } = useAccount();
     const { data: walletClient } = useWalletClient();
     const publicClient = usePublicClient();
+    const chainId = useChainId();
 
     const [status, setStatus] = useState<AaveDepositStatus>('idle');
     const [error, setError] = useState<string | null>(null);
@@ -21,11 +21,8 @@ export function useAaveDirect() {
         setTxHash(null);
     }, []);
 
-    const depositToAave = useCallback(async (amount: string) => {
-        if (!address || !walletClient || !publicClient) {
-            setError('Wallet not connected');
-            return;
-        }
+    const depositToAave = useCallback(async (amount: string, tokenAddress: string) => {
+        if (!address || !walletClient || !publicClient) return;
 
         setStatus('approving');
         setError(null);
@@ -33,9 +30,15 @@ export function useAaveDirect() {
 
         try {
             // 1. Check Allowance
-            // Use the Aave-compatible USDC address
-            const usdcAddress = AAVE_BASE_SEPOLIA.USDC as `0x${string}`;
+            // Use dynamic pool address based on chain
+            // 1. Check Chain
+            if (chainId !== AAVE_BASE_SEPOLIA.CHAIN_ID) {
+                throw new Error("Aave deposits are only supported on Base Sepolia");
+            }
+
             const poolAddress = AAVE_BASE_SEPOLIA.POOL as `0x${string}`;
+
+            const usdcAddress = tokenAddress as `0x${string}`;
 
             // Amount is already in human readable string, convert to bigint (6 decimals for USDC)
             // Wait, standard USDC is 6 decimals.
@@ -47,7 +50,7 @@ export function useAaveDirect() {
                 abi: ERC20_ABI,
                 functionName: 'allowance',
                 args: [address, poolAddress],
-            });
+            }) as unknown as bigint;
 
             if (allowance < amountBigInt) {
                 console.log('[Aave] Approving USDC...');

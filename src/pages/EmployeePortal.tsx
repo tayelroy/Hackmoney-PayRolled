@@ -10,12 +10,17 @@ import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useUserRole } from '@/hooks/useUserRole';
 import { AavePositionCard } from '@/components/AavePositionCard';
 import { AaveDepositModal } from '@/components/AaveDepositModal';
+import { UniswapPositionCard } from '@/components/UniswapPositionCard';
+import { UniswapSwapModal } from '@/components/UniswapSwapModal';
+import { AddLiquidityModal } from '@/components/AddLiquidityModal';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
     const { connect } = useConnect();
     const { role } = useUserRole();
     const [aaveModalOpen, setAaveModalOpen] = useState(false);
+    const [swapModalOpen, setSwapModalOpen] = useState(false);
+    const [liquidityModalOpen, setLiquidityModalOpen] = useState(false);
 
     if (!isConnected) {
         return (
@@ -103,6 +108,12 @@ export default function EmployeePortal() {
                         </Card>
                     </NavLink>
 
+                    {/* UNISWAP V4 AUTO-INVEST */}
+                    <UniswapPositionCard
+                        onSwapClick={() => setSwapModalOpen(true)}
+                        onAddLiquidityClick={() => setLiquidityModalOpen(true)}
+                    />
+
                     {/* AAVE INVESTMENTS CTA */}
                     <AavePositionCard address={address} onDeposit={() => setAaveModalOpen(true)} />
                 </div>
@@ -112,6 +123,18 @@ export default function EmployeePortal() {
                     open={aaveModalOpen}
                     onOpenChange={setAaveModalOpen}
                     usdcTokenAddress="0x036CbD53842c5426634e7929541eC2318f3dCF7e" // Base Sepolia USDC
+                />
+
+                {/* Uniswap Swap Modal */}
+                <UniswapSwapModal
+                    open={swapModalOpen}
+                    onOpenChange={setSwapModalOpen}
+                />
+
+                {/* Add Liquidity Modal */}
+                <AddLiquidityModal
+                    open={liquidityModalOpen}
+                    onOpenChange={setLiquidityModalOpen}
                 />
             </div>
         </Layout>
