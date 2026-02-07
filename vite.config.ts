@@ -213,11 +213,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'esnext',
-      minify: 'terser',
-      terserOptions: {
-        ecma: 2020,
-        module: true,
-      },
+      minify: false,
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
