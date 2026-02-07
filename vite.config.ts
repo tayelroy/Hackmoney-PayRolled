@@ -208,13 +208,20 @@ function cdnPrefixImages(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
-    build: {
+    esbuild: {
       target: 'es2020',
+    },
+    build: {
+      target: 'esnext',
+      minify: 'esbuild',
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
       esbuildOptions: {
         target: 'es2020',
+        supported: {
+          bigint: true,
+        },
       },
     },
     server: {
