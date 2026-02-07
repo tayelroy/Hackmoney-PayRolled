@@ -8,6 +8,9 @@ export function useUserRole() {
     const { address, isConnected } = useAccount();
     const [role, setRole] = useState<UserRole>('loading');
 
+    // Dev mode: allow manual role switching
+    const [manualRole, setManualRole] = useState<'admin' | 'employee' | null>(null);
+
     useEffect(() => {
         const checkRole = async () => {
             if (!isConnected || !address) {
@@ -18,9 +21,12 @@ export function useUserRole() {
             setRole('loading');
 
             // Development Mode: Grant admin access to any connected wallet
+            // But allow manual override for testing employee views
             if (import.meta.env.VITE_DEV_MODE === 'true') {
                 console.warn('🚧 DEV MODE ACTIVE: Granting admin access to', address);
-                setRole('admin');
+                const devRole = manualRole || 'admin';
+                console.log(`[Dev Mode] Using role: ${devRole}${manualRole ? ' (manual override)' : ''}`);
+                setRole(devRole);
                 return;
             }
 
@@ -60,7 +66,14 @@ export function useUserRole() {
         };
 
         checkRole();
-    }, [address, isConnected]);
+    }, [address, isConnected, manualRole]);
 
-    return { role, setRole };
+    // Helper to toggle role in dev mode
+    const toggleRole = () => {
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            setManualRole(prev => prev === 'employee' ? 'admin' : 'employee');
+        }
+    };
+
+    return { role, setRole, toggleRole, isDevMode: import.meta.env.VITE_DEV_MODE === 'true' };
 }

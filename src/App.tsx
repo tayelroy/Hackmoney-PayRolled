@@ -15,6 +15,7 @@ import Settings from "@/pages/Settings";
 import EmployeePortal from "@/pages/EmployeePortal";
 import EmployeeHistory from "@/pages/EmployeeHistory";
 import EmployeeConfig from "@/pages/EmployeeConfig";
+import { DevRoleToggle } from "@/components/DevRoleToggle";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,6 +106,7 @@ const App = () => {
             </Routes>
           </BrowserRouter>
           <Toaster />
+          <DevRoleToggle />
           <Sonner position="top-right" expand={false} richColors />
         </TooltipProvider>
       </QueryClientProvider>
