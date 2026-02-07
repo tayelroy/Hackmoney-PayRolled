@@ -15,6 +15,8 @@ import Settings from "@/pages/Settings";
 import EmployeePortal from "@/pages/EmployeePortal";
 import EmployeeHistory from "@/pages/EmployeeHistory";
 import EmployeeConfig from "@/pages/EmployeeConfig";
+import AavePage from "@/pages/AavePage";
+import UniswapPage from "@/pages/UniswapPage";
 import DevMode from "@/pages/DevMode";
 
 const queryClient = new QueryClient({
@@ -95,6 +97,23 @@ const App = () => {
                 element={
                   <AuthGuard allowedRoles={['employee']}>
                     <EmployeeConfig />
+                  </AuthGuard>
+                }
+              />
+
+              <Route
+                path={ROUTE_PATHS.PORTAL_AAVE}
+                element={
+                  <AuthGuard allowedRoles={['employee']}>
+                    <AavePage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path={ROUTE_PATHS.PORTAL_UNISWAP}
+                element={
+                  <AuthGuard allowedRoles={['employee']}>
+                    <UniswapPage />
                   </AuthGuard>
                 }
               />

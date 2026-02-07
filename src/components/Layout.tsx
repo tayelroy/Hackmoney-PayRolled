@@ -10,7 +10,9 @@ import {
   X,
   ChevronRight,
   Wallet,
-  Layers
+  Layers,
+  TrendingUp,
+  ArrowRightLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ROUTE_PATHS, formatAddress } from '@/lib/index';
@@ -28,6 +30,7 @@ export function Layout({ children }: LayoutProps) {
   const { address, disconnect, networkName } = useWallet();
   const location = useLocation();
   const { role } = useUserRole();
+  // const navigate = useNavigate(); // This line was removed in user edits, ensuring it's not reintroduced
 
   const allNavigation = [
     { name: 'Overview', href: ROUTE_PATHS.DASHBOARD, icon: LayoutDashboard, roles: ['admin'] },
@@ -35,9 +38,11 @@ export function Layout({ children }: LayoutProps) {
     { name: 'Employees', href: ROUTE_PATHS.EMPLOYEES, icon: Users, roles: ['admin'] },
     { name: 'History', href: ROUTE_PATHS.HISTORY, icon: History, roles: ['admin'] },
     { name: 'My History', href: ROUTE_PATHS.PORTAL_HISTORY, icon: History, roles: ['employee'] },
-    { name: 'My Config', href: ROUTE_PATHS.PORTAL_CONFIG, icon: Settings, roles: ['employee'] },
+    { name: 'My Config', href: ROUTE_PATHS.PORTAL_CONFIG, image: '/ethereum-name-service-ens-logo.png', roles: ['employee'] },
+    { name: 'Aave Savings', href: ROUTE_PATHS.PORTAL_AAVE, image: '/aave-aave-logo.png', roles: ['employee'] },
+    { name: 'Uniswap Invest', href: ROUTE_PATHS.PORTAL_UNISWAP, image: '/uniswap-uni-logo.png', roles: ['employee'] },
     { name: 'Settings', href: ROUTE_PATHS.SETTINGS, icon: Settings, roles: ['admin'] },
-  ];
+  ] as const;
 
   // Logic: 
   // If role is 'employee', they use Portal. They don't need general History page (which is all payrolls).
@@ -97,7 +102,11 @@ export function Layout({ children }: LayoutProps) {
                 )
               }
             >
-              <item.icon className="w-5 h-5" />
+              {'image' in item ? (
+                <img src={item.image} alt={item.name} className="w-5 h-5 object-contain" />
+              ) : (
+                <item.icon className="w-5 h-5" />
+              )}
               {item.name}
             </NavLink>
           ))}
@@ -228,7 +237,11 @@ export function Layout({ children }: LayoutProps) {
                       )
                     }
                   >
-                    <item.icon className="w-5 h-5" />
+                    {'image' in item ? (
+                      <img src={item.image} alt={item.name} className="w-5 h-5 object-contain" />
+                    ) : (
+                      <item.icon className="w-5 h-5" />
+                    )}
                     {item.name}
                   </NavLink>
                 ))}
@@ -237,6 +250,6 @@ export function Layout({ children }: LayoutProps) {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }

@@ -1,26 +1,21 @@
 import { useState } from 'react';
 import { useAccount, useConnect } from 'wagmi';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { History, Settings, ShieldCheck, Wallet, ArrowRight, Building2 } from 'lucide-react';
+import { History, Settings, ShieldCheck, Wallet, ArrowRight, Building2, Layers, TrendingUp, Sparkles } from 'lucide-react';
 import { injected } from 'wagmi/connectors';
 import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useUserRole } from '@/hooks/useUserRole';
 import { AavePositionCard } from '@/components/AavePositionCard';
-import { AaveDepositModal } from '@/components/AaveDepositModal';
 import { UniswapPositionCard } from '@/components/UniswapPositionCard';
-import { UniswapSwapModal } from '@/components/UniswapSwapModal';
-import { AddLiquidityModal } from '@/components/AddLiquidityModal';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
     const { connect } = useConnect();
     const { role } = useUserRole();
-    const [aaveModalOpen, setAaveModalOpen] = useState(false);
-    const [swapModalOpen, setSwapModalOpen] = useState(false);
-    const [liquidityModalOpen, setLiquidityModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     if (!isConnected) {
         return (
@@ -39,7 +34,8 @@ export default function EmployeePortal() {
 
     return (
         <Layout>
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-5xl mx-auto space-y-10 pb-10">
+                {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-slate-900">Portal Overview</h1>
@@ -47,9 +43,14 @@ export default function EmployeePortal() {
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* DIGITAL ID CARD */}
-                    <Card className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl p-8 border border-slate-700 md:col-span-2">
+                {/* SECTION 1: IDENTITY */}
+                <section className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                        <ShieldCheck className="w-4 h-4" />
+                        Identity & Status
+                    </div>
+
+                    <Card className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl p-8 border border-slate-700">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-3xl rounded-full -mr-32 -mt-32 pointer-events-none" />
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
                             <div className="w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-4xl font-bold shadow-inner">
@@ -71,71 +72,75 @@ export default function EmployeePortal() {
                             </div>
                         </div>
                     </Card>
+                </section>
 
-                    {/* HISTORY CTA */}
-                    <NavLink to={ROUTE_PATHS.PORTAL_HISTORY} className="group">
-                        <Card className="p-8 h-full hover:shadow-lg transition-all border-emerald-100 bg-gradient-to-br from-white to-emerald-50/20 active:scale-[0.98]">
-                            <div className="flex flex-col h-full">
-                                <div className="p-3 bg-emerald-100 rounded-xl text-emerald-600 w-fit mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                                    <History className="w-6 h-6" />
+                {/* SECTION 2: MANAGEMENT */}
+                <section className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                        <Layers className="w-4 h-4" />
+                        Management
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* HISTORY CTA */}
+                        <NavLink to={ROUTE_PATHS.PORTAL_HISTORY} className="group h-full">
+                            <Card className="p-8 h-full hover:shadow-lg transition-all border-emerald-100 bg-gradient-to-br from-white to-emerald-50/20 active:scale-[0.98]">
+                                <div className="flex flex-col h-full">
+                                    <div className="p-3 bg-emerald-100 rounded-xl text-emerald-600 w-fit mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                        <History className="w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-2">Payment History</h3>
+                                    <p className="text-sm text-slate-500 mb-6 flex-1">
+                                        View all past disbursements, download institutional payslips, and verify transaction hashes on-chain.
+                                    </p>
+                                    <div className="flex items-center text-emerald-600 font-bold text-sm">
+                                        View History <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Payment History</h3>
-                                <p className="text-sm text-slate-500 mb-6 flex-1">
-                                    View all past disbursements, download institutional payslips, and verify transaction hashes on-chain.
-                                </p>
-                                <div className="flex items-center text-emerald-600 font-bold text-sm">
-                                    View History <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Card>
+                        </NavLink>
+
+                        {/* CONFIG CTA */}
+                        <NavLink to={ROUTE_PATHS.PORTAL_CONFIG} className="group h-full">
+                            <Card className="p-8 h-full hover:shadow-lg transition-all border-blue-100 bg-gradient-to-br from-white to-blue-50/20 active:scale-[0.98]">
+                                <div className="flex flex-col h-full">
+                                    <div className="p-3 bg-blue-100 rounded-xl w-fit mb-6 group-hover:bg-blue-200 transition-colors">
+                                        <img src="/ethereum-name-service-ens-logo.png" alt="ENS" className="w-8 h-8 object-contain" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 mb-2">Payroll Config</h3>
+                                    <p className="text-sm text-slate-500 mb-6 flex-1">
+                                        Manage your self-sovereign payroll preferences. Set your preferred delivery chain and currency via ENS.
+                                    </p>
+                                    <div className="flex items-center text-blue-600 font-bold text-sm">
+                                        Manage Settings <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
-                            </div>
-                        </Card>
-                    </NavLink>
+                            </Card>
+                        </NavLink>
+                    </div>
+                </section>
 
-                    {/* CONFIG CTA */}
-                    <NavLink to={ROUTE_PATHS.PORTAL_CONFIG} className="group">
-                        <Card className="p-8 h-full hover:shadow-lg transition-all border-blue-100 bg-gradient-to-br from-white to-blue-50/20 active:scale-[0.98]">
-                            <div className="flex flex-col h-full">
-                                <div className="p-3 bg-blue-100 rounded-xl text-blue-600 w-fit mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                    <Settings className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">Payroll Config</h3>
-                                <p className="text-sm text-slate-500 mb-6 flex-1">
-                                    Manage your self-sovereign payroll preferences. Set your preferred delivery chain and currency via ENS.
-                                </p>
-                                <div className="flex items-center text-blue-600 font-bold text-sm">
-                                    Manage Settings <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </div>
-                        </Card>
-                    </NavLink>
+                {/* SECTION 3: DEFI INTEGRATIONS */}
+                <section className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                        <Sparkles className="w-4 h-4" />
+                        DeFi Integrations
+                    </div>
 
-                    {/* UNISWAP V4 AUTO-INVEST */}
-                    <UniswapPositionCard
-                        onSwapClick={() => setSwapModalOpen(true)}
-                        onAddLiquidityClick={() => setLiquidityModalOpen(true)}
-                    />
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* UNISWAP V4 AUTO-INVEST */}
+                        <UniswapPositionCard
+                            onSwapClick={() => navigate(ROUTE_PATHS.PORTAL_UNISWAP)}
+                            onAddLiquidityClick={() => navigate(ROUTE_PATHS.PORTAL_UNISWAP)}
+                        />
 
-                    {/* AAVE INVESTMENTS CTA */}
-                    <AavePositionCard address={address} onDeposit={() => setAaveModalOpen(true)} />
-                </div>
-
-                {/* Aave Deposit Modal */}
-                <AaveDepositModal
-                    open={aaveModalOpen}
-                    onOpenChange={setAaveModalOpen}
-                    usdcTokenAddress="0x036CbD53842c5426634e7929541eC2318f3dCF7e" // Base Sepolia USDC
-                />
-
-                {/* Uniswap Swap Modal */}
-                <UniswapSwapModal
-                    open={swapModalOpen}
-                    onOpenChange={setSwapModalOpen}
-                />
-
-                {/* Add Liquidity Modal */}
-                <AddLiquidityModal
-                    open={liquidityModalOpen}
-                    onOpenChange={setLiquidityModalOpen}
-                />
+                        {/* AAVE INVESTMENTS CTA */}
+                        <AavePositionCard
+                            address={address}
+                            onDeposit={() => navigate(ROUTE_PATHS.PORTAL_AAVE)}
+                        />
+                    </div>
+                </section>
             </div>
         </Layout>
     );
