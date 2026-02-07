@@ -217,10 +217,23 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
+      exclude: [
+        'viem',
+        'wagmi',
+        '@wagmi/core',
+        '@wagmi/connectors',
+        '@uniswap/v4-sdk',
+        '@uniswap/universal-router-sdk',
+        '@circle-fin/bridge-kit',
+        '@circle-fin/adapter-viem-v2',
+      ],
       esbuildOptions: {
         target: 'esnext',
         supported: {
           bigint: true,
+        },
+        define: {
+          global: 'globalThis',
         },
       },
     },
