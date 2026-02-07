@@ -215,6 +215,14 @@ export default defineConfig(({ mode }) => {
       target: 'esnext',
       minify: false,
       chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          generatedCode: {
+            constBindings: true,
+          },
+          intro: `if (typeof globalThis !== 'undefined' && typeof globalThis.BigInt === 'undefined') { globalThis.BigInt = BigInt; } if (typeof global === 'undefined') { window.global = globalThis; }`,
+        },
+      },
     },
     optimizeDeps: {
       exclude: [
