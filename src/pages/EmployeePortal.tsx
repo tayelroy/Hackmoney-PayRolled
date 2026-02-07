@@ -10,12 +10,14 @@ import { ROUTE_PATHS, formatAddress } from '@/lib/index';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UniswapPositionCard } from '@/components/UniswapPositionCard';
 import { UniswapSwapModal } from '@/components/UniswapSwapModal';
+import { AddLiquidityModal } from '@/components/AddLiquidityModal';
 
 export default function EmployeePortal() {
     const { address, isConnected } = useAccount();
     const { connect } = useConnect();
     const { role } = useUserRole();
     const [swapModalOpen, setSwapModalOpen] = useState(false);
+    const [liquidityModalOpen, setLiquidityModalOpen] = useState(false);
 
     if (!isConnected) {
         return (
@@ -104,7 +106,10 @@ export default function EmployeePortal() {
                     </NavLink>
 
                     {/* UNISWAP V4 AUTO-INVEST */}
-                    <UniswapPositionCard onSwapClick={() => setSwapModalOpen(true)} />
+                    <UniswapPositionCard
+                        onSwapClick={() => setSwapModalOpen(true)}
+                        onAddLiquidityClick={() => setLiquidityModalOpen(true)}
+                    />
                 </div>
 
                 {/* Uniswap Swap Modal */}
@@ -112,7 +117,14 @@ export default function EmployeePortal() {
                     open={swapModalOpen}
                     onOpenChange={setSwapModalOpen}
                 />
+
+                {/* Add Liquidity Modal */}
+                <AddLiquidityModal
+                    open={liquidityModalOpen}
+                    onOpenChange={setLiquidityModalOpen}
+                />
             </div>
         </Layout>
     );
 }
+
