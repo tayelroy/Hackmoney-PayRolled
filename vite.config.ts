@@ -208,6 +208,9 @@ function cdnPrefixImages(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
+    build: {
+      target: 'es2020',
+    },
     server: {
       host: "::",
       port: 8080,
@@ -230,6 +233,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
+      global: 'window',
       // Define environment variables for build-time configuration
       // In production, this will be false by default unless explicitly set to 'true'
       // In development and test, this will be true by default
