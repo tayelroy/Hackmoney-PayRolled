@@ -212,6 +212,11 @@ export default defineConfig(({ mode }) => {
       target: 'es2020',
       chunkSizeWarningLimit: 1000,
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'es2020',
+      },
+    },
     server: {
       host: "::",
       port: 8080,
