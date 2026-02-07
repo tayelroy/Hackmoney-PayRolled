@@ -210,6 +210,22 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       target: 'es2020',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('wagmi') || id.includes('viem') || id.includes('@tanstack')) {
+                return 'vendor-web3';
+              }
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'vendor-core';
+              }
+              return 'vendor';
+            }
+          },
+        },
+      },
+      chunkSizeWarningLimit: 1000,
     },
     server: {
       host: "::",
