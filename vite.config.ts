@@ -225,14 +225,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     optimizeDeps: {
-      exclude: [
-        // Only exclude JSBI-related packages for BigInt compatibility
-        'jsbi',
-        '@uniswap/sdk-core',
-        '@uniswap/v3-sdk',
-        '@uniswap/v4-sdk',
-        '@uniswap/universal-router-sdk',
-      ],
       esbuildOptions: {
         target: 'esnext',
         supported: {
