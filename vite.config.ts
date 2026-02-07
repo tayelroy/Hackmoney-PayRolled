@@ -226,19 +226,12 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: {
       exclude: [
-        'viem',
-        'wagmi',
-        '@wagmi/core',
-        '@wagmi/connectors',
+        // Only exclude JSBI-related packages for BigInt compatibility
         'jsbi',
         '@uniswap/sdk-core',
         '@uniswap/v3-sdk',
         '@uniswap/v4-sdk',
         '@uniswap/universal-router-sdk',
-        '@uniswap/swap-router-contracts',
-        '@uniswap/permit2-sdk',
-        '@circle-fin/bridge-kit',
-        '@circle-fin/adapter-viem-v2',
       ],
       esbuildOptions: {
         target: 'esnext',
