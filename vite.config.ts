@@ -209,16 +209,20 @@ function cdnPrefixImages(): Plugin {
 export default defineConfig(({ mode }) => {
   return {
     esbuild: {
-      target: 'es2020',
+      target: 'esnext',
     },
     build: {
       target: 'esnext',
-      minify: 'esbuild',
+      minify: 'terser',
+      terserOptions: {
+        ecma: 2020,
+        module: true,
+      },
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
       esbuildOptions: {
-        target: 'es2020',
+        target: 'esnext',
         supported: {
           bigint: true,
         },
