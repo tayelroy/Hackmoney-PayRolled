@@ -59,7 +59,16 @@ export default function UniswapPage() {
 
     const handleAddLiquidity = async () => {
         if (!usdcAmount || !ethAmount) return;
-        await addLiquidity(usdcAmount, ethAmount);
+
+        await addLiquidity({
+            token0Address: UNISWAP_V4_BASE_SEPOLIA.USDC,
+            token1Address: UNISWAP_V4_BASE_SEPOLIA.WETH,
+            amount0: usdcAmount,
+            amount1: ethAmount,
+            decimals0: 6,
+            decimals1: 18,
+        });
+
         setUsdcAmount('');
         setEthAmount('');
     };
@@ -190,7 +199,7 @@ export default function UniswapPage() {
                                             value={ethAmount}
                                             onChange={(e) => setEthAmount(e.target.value)}
                                         />
-                                        <p className="text-xs text-muted-foreground">Balance: {ethBalanceData?.formatted ?? '0.00'}</p>
+                                        <p className="text-xs text-muted-foreground">Balance: {ethBalanceData ? formatUnits(ethBalanceData.value, ethBalanceData.decimals) : '0.00'}</p>
                                     </div>
                                 </div>
 
