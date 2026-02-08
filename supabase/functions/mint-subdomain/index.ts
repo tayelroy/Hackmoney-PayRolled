@@ -78,7 +78,7 @@ serve(async (req) => {
         const walletClient = createWalletClient({
             account,
             chain: sepolia,
-            transport: http('https://eth-sepolia.g.alchemy.com/v2/ALCHEMY_API_KEY'),
+            transport: http(`https://eth-sepolia.g.alchemy.com/v2/${Deno.env.get('ALCHEMY_API_KEY')}`),
         });
 
         // Calculate namehash of parent domain and label hash
